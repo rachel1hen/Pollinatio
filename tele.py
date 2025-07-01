@@ -85,13 +85,12 @@ def generate_tts_audio(text: str) -> bytes:
     """Generate TTS audio from text using Pollinations.ai (sync version)."""
     if not text:
         raise ValueError("Empty text provided for TTS")
-
-     payload = {
+    
+    payload = {
         "text": text,
         "model": "suno/bark",  # Emotionally expressive model
         "voice_preset": "v2/en_speaker_6"  # Natural-sounding voice
     }
-
     try:
         response = requests.post(
             POLLINATIONS_TTS_URL,
