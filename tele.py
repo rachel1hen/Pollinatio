@@ -22,7 +22,7 @@ TELEGRAM_SEND_MESSAGE_URL = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendM
 TELEGRAM_SEND_AUDIO_URL = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendAudio"
 
 # Pollinations TTS API endpoint
-POLLINATIONS_TTS_URL = "https://api.pollinations.ai/tts"
+POLLINATIONS_TTS_URL = "https://text.pollinations.ai/models/tts"
 HEADERS = {
     "Authorization": f"Bearer {POLLINATIONS_TOKEN}",
     "Content-Type": "application/json"
@@ -126,6 +126,9 @@ def process_url(chat_id, url):
         send_telegram_audio(chat_id, audio_data)
     else:
         send_telegram_message(chat_id, "❌ Failed to generate audio")
+        audio_data = generate_tts_audio(content[:800])
+        if audio_data:
+            send_telegram_audio(chat_id, audio_data)
 
 @app.route('/webhook', methods=['POST'])
 def webhook_handler():
