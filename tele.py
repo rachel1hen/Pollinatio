@@ -76,27 +76,24 @@ def scrape_web_content(url):
         print(f"Scraping error: {e}")
         return None
         
-async def generate_tts_audio(text: str) -> bytes:
-    """
-    Generate TTS audio from text using Pollinations.ai API.
-    Returns audio bytes or raises exception on failure.
-    """
+def generate_tts_audio(text: str) -> bytes:
+    """Generate TTS audio from text using Pollinations.ai (sync version)."""
     if not text:
         raise ValueError("Empty text provided for TTS")
-        
+
     url = "https://text.pollinations.ai/models/tts"
     params = {"text": text, "voice": "en-US-Wavenet-A"}  # Natural-sounding voice
     headers = {"Authorization": f"Bearer {POLLINATIONS_TOKEN}"}
-    
-    async with aiohttp.ClientSession() as session:
-        async with session.get(url, params=params, headers=headers, timeout=30) as response:
-            if response.status != 200:
-                error = await response.text()
-                logger.error(f"TTS API error {response.status}: {error}")
-                raise ConnectionError(f"TTS API error: {error}")
-            
-            return await response.read()
 
+    try:
+        response = requests.get(url, params=params, headers=headers, timeout=30)
+        if response.status_code != 200:
+            logger.error(f"TTS API error {response.status_code}: {response.text}")
+            return None
+        return response.content
+    except Exception as e:
+        logger.error(f"TTS request failed: {e}")
+        return None
 
 def process_url(chat_id, url):
     """Process URL: scrape content, send text and generated audio."""
