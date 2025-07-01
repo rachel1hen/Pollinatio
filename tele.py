@@ -8,9 +8,8 @@ from flask import Flask, request
 app = Flask(__name__)
 
 # Get tokens from environment variables
-TELEGRAM_TOKEN = os.environ.get('TELEGRAM_TOKEN') OR "7445313694:AAGOphwXa1pU2Urxvcm6UdMmf05oaZz5T40"
-POLLINATIONS_TOKEN = os.environ.get('POLLINATIONS_TOKEN') OR "4k5pIzcTt1F7RiEn"
-
+TELEGRAM_TOKEN = os.environ.get('TELEGRAM_TOKEN')
+POLLINATIONS_TOKEN = os.environ.get('POLLINATIONS_TOKEN')
 # Validate tokens
 if not TELEGRAM_TOKEN or not POLLINATIONS_TOKEN:
     raise ValueError("TELEGRAM_TOKEN and POLLINATIONS_TOKEN must be set in environment variables")
