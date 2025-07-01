@@ -101,7 +101,7 @@ def generate_tts_audio(text: str) -> bytes:
         #     timeout=30
         # )
 
-        response = requests.get(url, params=params, headers=headers, timeout=60)
+        response = requests.get(POLLINATIONS_TTS_URL, params=params, headers=headers, timeout=60)
         if response.status_code == 200:
             return response.content
         else:
