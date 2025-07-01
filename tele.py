@@ -49,7 +49,15 @@ def send_telegram_message(chat_id, text):
 def send_telegram_audio(chat_id, audio_data):
     """Send audio file via Telegram API."""
     try:
+        logger.info(response.headers.get("Content-Type"))
         files = {'audio': ('audio.mp3', audio_data, 'audio/mpeg')}
+        files = {'audio': ('audio.mp3', audio_data, 'audio/mpeg')}  # If it's MP3
+        
+
+        data = {'chat_id': chat_id}
+        response = requests.post(TELEGRAM_SEND_AUDIO_URL, files=files, data=data)
+        response.raise_for_status()
+        files = {'audio': ('audio.ogg', audio_data, 'audio/ogg')}    # If it's OGG
         data = {'chat_id': chat_id}
         response = requests.post(TELEGRAM_SEND_AUDIO_URL, files=files, data=data)
         response.raise_for_status()
