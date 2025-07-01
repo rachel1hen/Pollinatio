@@ -12,6 +12,7 @@ app = Flask(__name__)
 # Get tokens from environment variables
 TELEGRAM_TOKEN = os.environ.get('TELEGRAM_TOKEN')
 POLLINATIONS_TOKEN = os.environ.get('POLLINATIONS_TOKEN')
+
 # Validate tokens
 if not TELEGRAM_TOKEN or not POLLINATIONS_TOKEN:
     raise ValueError("TELEGRAM_TOKEN and POLLINATIONS_TOKEN must be set in environment variables")
@@ -22,6 +23,10 @@ TELEGRAM_SEND_AUDIO_URL = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendAud
 
 # Pollinations TTS API endpoint
 POLLINATIONS_TTS_URL = "https://api.pollinations.ai/tts"
+HEADERS = {
+    "Authorization": f"Bearer {POLLINATIONS_TOKEN}",
+    "Content-Type": "application/json"
+}
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger("StoryBot")
 # URL validation regex
@@ -81,18 +86,28 @@ def generate_tts_audio(text: str) -> bytes:
     if not text:
         raise ValueError("Empty text provided for TTS")
 
-    url = "https://text.pollinations.ai/models/tts"
-    params = {"text": text, "voice": "en-US-Wavenet-A"}  # Natural-sounding voice
-    headers = {"Authorization": f"Bearer {POLLINATIONS_TOKEN}"}
+     payload = {
+        "text": text,
+        "model": "suno/bark",  # Emotionally expressive model
+        "voice_preset": "v2/en_speaker_6"  # Natural-sounding voice
+    }
 
     try:
-        response = requests.get(url, params=params, headers=headers, timeout=30)
-        if response.status_code != 200:
-            logger.error(f"TTS API error {response.status_code}: {response.text}")
+        response = requests.post(
+            POLLINATIONS_TTS_URL,
+            json=payload,
+            headers=HEADERS,
+            timeout=30
+        )
+        
+        if response.status_code == 200:
+            return response.content
+        else:
+            logger.error(f"TTS API error: {response.status_code} - {response.text}")
             return None
-        return response.content
-    except Exception as e:
-        logger.error(f"TTS request failed: {e}")
+            
+    except requests.exceptions.RequestException as e:
+        logger.error(f"Request failed: {e}")
         return None
 
 def process_url(chat_id, url):
