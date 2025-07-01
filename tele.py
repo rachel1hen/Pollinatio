@@ -5,7 +5,6 @@ import requests
 import trafilatura
 from flask import Flask, request
 import logging
-from trafilatura import fetch_url, extract
 
 app = Flask(__name__)
 
@@ -27,12 +26,13 @@ HEADERS = {
     "Authorization": f"Bearer {POLLINATIONS_TOKEN}",
     "Content-Type": "application/json"
 }
+
+# Logging configuration
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger("StoryBot")
+
 # URL validation regex
-URL_REGEX = re.compile(
-    r'https?://(?:[\w-]+\.)+[\w-]+(?:/[\w\-./?%&=]*)?'
-)
+URL_REGEX = re.compile(r'https?://[^\s<>"']+|www\.[^\s<>"']+')
 
 def send_telegram_message(chat_id, text):
     """Send text message via Telegram API."""
@@ -41,37 +41,34 @@ def send_telegram_message(chat_id, text):
         "text": text[:4090] + '...' if len(text) > 4096 else text
     }
     try:
-        response = requests.post(TELEGRAM_SEND_MESSAGE_URL, json=payload)
+        response = requests.post(TELEGRAM_SEND_MESSAGE_URL, json=payload, timeout=15)
         response.raise_for_status()
     except requests.exceptions.RequestException as e:
-        print(f"Error sending message: {e}")
+        logger.error(f"Error sending message: {e}")
 
 def send_telegram_audio(chat_id, audio_data):
     """Send audio file via Telegram API."""
     try:
+        files = {'audio': ('audio.ogg', audio_data, 'audio/ogg')}
+        data = {'chat_id': chat_id}
+        response = requests.post(TELEGRAM_SEND_AUDIO_URL, files=files, data=data, timeout=15)
+        response.raise_for_status()
         logger.info(response.headers.get("Content-Type"))
-        files = {'audio': ('audio.mp3', audio_data, 'audio/mpeg')}
-        files = {'audio': ('audio.mp3', audio_data, 'audio/mpeg')}  # If it's MP3
-        
-
-        data = {'chat_id': chat_id}
-        response = requests.post(TELEGRAM_SEND_AUDIO_URL, files=files, data=data)
-        response.raise_for_status()
-        files = {'audio': ('audio.ogg', audio_data, 'audio/ogg')}    # If it's OGG
-        data = {'chat_id': chat_id}
-        response = requests.post(TELEGRAM_SEND_AUDIO_URL, files=files, data=data)
-        response.raise_for_status()
+        logger.info(response.text)
     except requests.exceptions.RequestException as e:
-        print(f"Error sending audio: {e}")
+        logger.error(f"Error sending audio: {e}")
 
 def custom_fetch(url):
     headers = {'User-Agent': 'Mozilla/5.0'}
-    response = requests.get(url, headers=headers, timeout=10)
-    logger.info(response)
-    if response.ok:
-        return extract(response.text)
-    else:
-        logger.info(f"[ERROR] Failed fetch: {response.status_code}")
+    try:
+        response = requests.get(url, headers=headers, timeout=10)
+        if response.ok:
+            return trafilatura.extract(response.text)
+        else:
+            logger.error(f"[ERROR] Failed fetch: {response.status_code}")
+            return None
+    except requests.exceptions.RequestException as e:
+        logger.error(f"Custom fetch failed: {e}")
         return None
 
 def scrape_web_content(url):
@@ -80,88 +77,76 @@ def scrape_web_content(url):
         downloaded = trafilatura.fetch_url(url)
         if not downloaded:
             return custom_fetch(url)
-             
-        logger.info(dowloaded)
+
+        logger.info("Content downloaded")
         content = trafilatura.extract(downloaded)
         logger.info(content)
         return content.strip() if content else None
     except Exception as e:
-        print(f"Scraping error: {e}")
+        logger.error(f"Scraping error: {e}")
         return None
-        
+
 def generate_tts_audio(text: str) -> bytes:
     """Generate TTS audio from text using Pollinations.ai (sync version)."""
     if not text:
         raise ValueError("Empty text provided for TTS")
-    
+
     params = {"text": text, "voice": "en-US-Wavenet-A"}  # You can change the voice
     headers = {"Authorization": f"Bearer {POLLINATIONS_TOKEN}"}
-    # payload = {
-    #     "text": text,
-    #     "model": "suno/bark",  # Emotionally expressive model
-    #     "voice_preset": "v2/en_speaker_6"  # Natural-sounding voice
-    # }
-    try:
-        # response = requests.post(
-        #     POLLINATIONS_TTS_URL,
-        #     json=payload,
-        #     headers=HEADERS,
-        #     timeout=30
-        # )
 
+    try:
         response = requests.get(POLLINATIONS_TTS_URL, params=params, headers=headers, timeout=60)
         if response.status_code == 200:
             return response.content
         else:
             logger.error(f"TTS API error: {response.status_code} - {response.text}")
             return None
-            
     except requests.exceptions.RequestException as e:
-        logger.error(f"Request failed: {e}")
+        logger.error(f"TTS request failed: {e}")
         return None
 
 def process_url(chat_id, url):
     """Process URL: scrape content, send text and generated audio."""
-    # Scrape content
     content = scrape_web_content(url)
     if not content:
         send_telegram_message(chat_id, "❌ Failed to extract content from URL")
         return
 
-    # Send scraped content
     send_telegram_message(chat_id, f"📝 Extracted content:\n\n{content}")
-    
-    # Generate and send audio
+
     audio_data = generate_tts_audio(content)
+    if not audio_data and len(content) > 800:
+        logger.info("Retrying TTS with shortened content...")
+        audio_data = generate_tts_audio(content[:800])
+
     if audio_data:
         send_telegram_audio(chat_id, audio_data)
     else:
         send_telegram_message(chat_id, "❌ Failed to generate audio")
-        audio_data = generate_tts_audio(content[:800])
-        if audio_data:
-            send_telegram_audio(chat_id, audio_data)
 
 @app.route('/webhook', methods=['POST'])
 def webhook_handler():
     """Handle incoming Telegram updates."""
     update = request.json
-    
+
     if 'message' not in update:
         return 'OK', 200
-    
+
     message = update['message']
     chat_id = message['chat']['id']
     text = message.get('text', '')
-    
-    # Find URLs in message
+
     urls = URL_REGEX.findall(text)
     if not urls:
         send_telegram_message(chat_id, "🔍 Please send a valid URL")
         return 'OK', 200
-    
-    # Process first URL in background thread
+
     threading.Thread(target=process_url, args=(chat_id, urls[0])).start()
     return 'OK', 200
+
+@app.route('/health')
+def health():
+    return "OK", 200
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=False)
