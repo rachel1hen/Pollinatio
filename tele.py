@@ -4,6 +4,7 @@ import threading
 import requests
 import trafilatura
 from flask import Flask, request
+from trafilatura import fetch_url, extract
 
 app = Flask(__name__)
 
@@ -20,7 +21,8 @@ TELEGRAM_SEND_AUDIO_URL = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendAud
 
 # Pollinations TTS API endpoint
 POLLINATIONS_TTS_URL = "https://api.pollinations.ai/tts"
-
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logger = logging.getLogger("StoryBot")
 # URL validation regex
 URL_REGEX = re.compile(
     r'https?://(?:[\w-]+\.)+[\w-]+(?:/[\w\-./?%&=]*)?'
@@ -48,13 +50,26 @@ def send_telegram_audio(chat_id, audio_data):
     except requests.exceptions.RequestException as e:
         print(f"Error sending audio: {e}")
 
+def custom_fetch(url):
+    headers = {'User-Agent': 'Mozilla/5.0'}
+    response = requests.get(url, headers=headers, timeout=10)
+    logger.info(response)
+    if response.ok:
+        return extract(response.text)
+    else:
+        logger.info(f"[ERROR] Failed fetch: {response.status_code}")
+        return None
+
 def scrape_web_content(url):
     """Scrape main content from URL using trafilatura."""
     try:
         downloaded = trafilatura.fetch_url(url)
         if not downloaded:
-            return None
+            return custom_fetch(url)
+             
+        logger.info(dowloaded)
         content = trafilatura.extract(downloaded)
+        logger.info(content)
         return content.strip() if content else None
     except Exception as e:
         print(f"Scraping error: {e}")
