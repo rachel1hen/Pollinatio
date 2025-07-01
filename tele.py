@@ -86,19 +86,22 @@ def generate_tts_audio(text: str) -> bytes:
     if not text:
         raise ValueError("Empty text provided for TTS")
     
-    payload = {
-        "text": text,
-        "model": "suno/bark",  # Emotionally expressive model
-        "voice_preset": "v2/en_speaker_6"  # Natural-sounding voice
-    }
+    params = {"text": text, "voice": "en-US-Wavenet-A"}  # You can change the voice
+    headers = {"Authorization": f"Bearer {POLLINATIONS_TOKEN}"}
+    # payload = {
+    #     "text": text,
+    #     "model": "suno/bark",  # Emotionally expressive model
+    #     "voice_preset": "v2/en_speaker_6"  # Natural-sounding voice
+    # }
     try:
-        response = requests.post(
-            POLLINATIONS_TTS_URL,
-            json=payload,
-            headers=HEADERS,
-            timeout=30
-        )
-        
+        # response = requests.post(
+        #     POLLINATIONS_TTS_URL,
+        #     json=payload,
+        #     headers=HEADERS,
+        #     timeout=30
+        # )
+
+        response = requests.get(url, params=params, headers=headers, timeout=60)
         if response.status_code == 200:
             return response.content
         else:
