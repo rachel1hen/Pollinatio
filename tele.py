@@ -75,22 +75,28 @@ def scrape_web_content(url):
     except Exception as e:
         print(f"Scraping error: {e}")
         return None
-
-def generate_tts_audio(text, token):
-    """Generate TTS audio from text using Pollinations API."""
-    headers = {
-        "Authorization": f"Bearer {token}",
-        "Content-Type": "application/json"
-    }
-    payload = {"text": text[:5000]}  # Truncate long texts
+        
+async def generate_tts_audio(text: str) -> bytes:
+    """
+    Generate TTS audio from text using Pollinations.ai API.
+    Returns audio bytes or raises exception on failure.
+    """
+    if not text:
+        raise ValueError("Empty text provided for TTS")
+        
+    url = "https://text.pollinations.ai/models/tts"
+    params = {"text": text, "voice": "en-US-Wavenet-A"}  # Natural-sounding voice
+    headers = {"Authorization": f"Bearer {POLLINATIONS_TOKEN}"}
     
-    try:
-        response = requests.post(POLLINATIONS_TTS_URL, json=payload, headers=headers, timeout=30)
-        response.raise_for_status()
-        return response.content
-    except requests.exceptions.RequestException as e:
-        print(f"TTS API error: {e}")
-        return None
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url, params=params, headers=headers, timeout=30) as response:
+            if response.status != 200:
+                error = await response.text()
+                logger.error(f"TTS API error {response.status}: {error}")
+                raise ConnectionError(f"TTS API error: {error}")
+            
+            return await response.read()
+
 
 def process_url(chat_id, url):
     """Process URL: scrape content, send text and generated audio."""
@@ -104,7 +110,7 @@ def process_url(chat_id, url):
     send_telegram_message(chat_id, f"📝 Extracted content:\n\n{content}")
     
     # Generate and send audio
-    audio_data = generate_tts_audio(content, POLLINATIONS_TOKEN)
+    audio_data = generate_tts_audio(content)
     if audio_data:
         send_telegram_audio(chat_id, audio_data)
     else:
