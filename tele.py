@@ -4,6 +4,7 @@ import threading
 import requests
 import trafilatura
 from flask import Flask, request
+import logging
 from trafilatura import fetch_url, extract
 
 app = Flask(__name__)
