@@ -32,7 +32,9 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger("StoryBot")
 
 # URL validation regex
-URL_REGEX = re.compile(r'https?://[^\s<>"']+|www\.[^\s<>"']+')
+#URL_REGEX = re.compile(r'https?://[^\s<>"']+|www\.[^\s<>"']+')
+URL_REGEX = re.compile(r"https?://[^\s<>\"']+|www\.[^\s<>\"']+")
+
 
 def send_telegram_message(chat_id, text):
     """Send text message via Telegram API."""
