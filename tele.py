@@ -1,10 +1,17 @@
 import os
 import re
 import threading
+import json
+import logging
 import requests
 import trafilatura
 from flask import Flask, request
 import logging
+import edge_tts
+from undetected import generate_data
+from deepseek_edgetts import generate_tts
+import io
+import asyncio
 
 app = Flask(__name__)
 
@@ -20,12 +27,6 @@ if not TELEGRAM_TOKEN or not POLLINATIONS_TOKEN:
 TELEGRAM_SEND_MESSAGE_URL = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
 TELEGRAM_SEND_AUDIO_URL = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendAudio"
 
-# Pollinations TTS API endpoint
-POLLINATIONS_TTS_URL = "https://text.pollinations.ai/models/tts"
-HEADERS = {
-    "Authorization": f"Bearer {POLLINATIONS_TOKEN}",
-    "Content-Type": "application/json"
-}
 
 # Logging configuration
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -35,6 +36,77 @@ logger = logging.getLogger("StoryBot")
 #URL_REGEX = re.compile(r'https?://[^\s<>"']+|www\.[^\s<>"']+')
 URL_REGEX = re.compile(r"https?://[^\s<>\"']+|www\.[^\s<>\"']+")
 
+def generate_tts_with_edge_tts(json_file_path):
+    """
+    Generate TTS audio using Edge TTS for each entry in the JSON file.
+    The JSON is a list of [author, emotion, text, gender].
+    SSML tags in 'text' are ignored by edge_tts local, so we try to extract prosody info and apply as best as possible.
+    Returns: bytes of concatenated audio in ogg_opus format.
+    """
+
+    # Helper to extract prosody info from SSML if possible
+    def extract_prosody(text):
+        # Defaults
+        rate = "0%"
+        pitch = "0Hz"
+        volume = "0%"
+        # Try to extract from <prosody ...> tag
+        m = re.search(r'<prosody([^>]*)>', text)
+        if m:
+            attrs = m.group(1)
+            rate_m = re.search(r'rate="([^"]+)"', attrs)
+            pitch_m = re.search(r'pitch="([^"]+)"', attrs)
+            volume_m = re.search(r'volume="([^"]+)"', attrs)
+            if rate_m:
+                rate = rate_m.group(1)
+            if pitch_m:
+                pitch = pitch_m.group(1)
+            if volume_m:
+                volume = volume_m.group(1)
+        # Remove all SSML tags for edge_tts local
+        safe_text = re.sub(r'<[^>]+>', '', text)
+        return safe_text, rate, pitch, volume
+
+    # Map gender to edge_tts voice
+    def get_voice(gender):
+        # You can expand this mapping as needed
+        if gender == "male":
+            return "en-US-GuyNeural"
+        elif gender == "female":
+            return "en-US-JennyNeural"
+        else:
+            return "en-US-JennyNeural"
+
+    async def synthesize_all(entries):
+        audio_bytes = io.BytesIO()
+        for entry in entries:
+            author, emotion, text, gender = entry
+            safe_text, rate, pitch, volume = extract_prosody(text)
+            voice = get_voice(gender)
+            try:
+                communicate = edge_tts.Communicate(
+                    text=safe_text,
+                    voice=voice,
+                    rate=rate,
+                    pitch=pitch,
+                    volume=volume
+                )
+                async for chunk in communicate.stream():
+                    if chunk["type"] == "audio":
+                        audio_bytes.write(chunk["data"])
+            except Exception as e:
+                logger.error(f"Error generating TTS for '{safe_text}': {e}")
+        return audio_bytes.getvalue()
+
+    with open(json_file_path, "r", encoding="utf-8") as file:
+        data = json.load(file)
+
+    try:
+        audio_data = asyncio.run(synthesize_all(data))
+        return audio_data
+    except Exception as e:
+        logger.error(f"Error generating TTS: {e}")
+        return None
 
 def send_telegram_message(chat_id, text):
     """Send text message via Telegram API."""
@@ -88,31 +160,6 @@ def scrape_web_content(url):
         logger.error(f"Scraping error: {e}")
         return None
 
-def generate_tts_audio(text: str) -> bytes:
-    """Generate TTS audio from text using Pollinations.ai with content-type validation."""
-    if not text:
-        raise ValueError("Empty text provided for TTS")
-
-    params = {"text": text, "voice": "en-US-Wavenet-A"}
-    headers = {"Authorization": f"Bearer {POLLINATIONS_TOKEN}"}
-
-    try:
-        response = requests.get(POLLINATIONS_TTS_URL, params=params, headers=headers, timeout=60)
-        logger.info(f"TTS Response Status: {response.status_code}")
-        logger.info(f"TTS Response Headers: {response.headers}")
-
-        content_type = response.headers.get("Content-Type", "")
-
-        if content_type.startswith("audio"):
-            logger.info(f"✅ Received audio content of size {len(response.content)} bytes.")
-            return response.content
-        else:
-            logger.error(f"⚠️ TTS API returned non-audio content: {response.text}")
-            return None
-
-    except requests.exceptions.RequestException as e:
-        logger.error(f"TTS request failed: {e}")
-        return None
 
 
 def process_url(chat_id, url):
@@ -121,18 +168,16 @@ def process_url(chat_id, url):
     if not content:
         send_telegram_message(chat_id, "❌ Failed to extract content from URL")
         return
-
+    
     send_telegram_message(chat_id, f"📝 Extracted content:\n\n{content}")
+    content = re.sub(r'\n+', ' ', content)
+    json_file_path = generate_data(content)
+    if not json_file_path:
+        send_telegram_message(chat_id, "❌ Failed to generate TTS data")
+        return
+    audio_data = generate_tts_with_edge_tts(json_file_path)
+    send_telegram_audio(chat_id, audio_data)
 
-    audio_data = generate_tts_audio(content)
-    if not audio_data and len(content) > 800:
-        logger.info("Retrying TTS with shortened content...")
-        audio_data = generate_tts_audio(content[:800])
-
-    if audio_data:
-        send_telegram_audio(chat_id, audio_data)
-    else:
-        send_telegram_message(chat_id, "❌ Failed to generate audio")
 
 @app.route('/webhook', methods=['POST'])
 def webhook_handler():
