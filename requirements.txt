@@ -1,3 +1,9 @@
-trafilatura
-flask
+Flask
 requests
+trafilatura
+edge-tts
+pydub
+selenium
+beautifulsoup4
+undetected-chromedriver
+
