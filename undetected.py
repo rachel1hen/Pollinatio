@@ -114,16 +114,19 @@ def generate_data(text):
             else:
                 print("❌ <pre><code> JSON output not found after <h2>.")
             print(f"✅ Saved content after <h2> with 'Copilot said' to {OUTPUT_FILE}")
+            return OUTPUT_FILE
         else:
             print("❌ <h2> tag with text 'Copilot said' not found in the page content.")
+            return None
 
     except Exception as e:
         print(f"Error occurred: {str(e)}")
+        return None
 
     finally:
         # Clean up
         driver.quit()
-    return OUTPUT_FILE
+    return None
 
 if __name__ == "__main__":
     generate_data()
