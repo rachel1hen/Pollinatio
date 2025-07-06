@@ -1,31 +1,41 @@
-# Use Python 3.11 slim as the base image
 FROM python:3.11-slim
 
-# Install system dependencies
+# Install system dependencies for Chrome & Selenium
 RUN apt-get update && apt-get install -y \
-    ffmpeg \
-    curl \
-    unzip \
-    chromium-driver \
     chromium \
+    chromium-driver \
+    fonts-liberation \
+    libappindicator3-1 \
+    libasound2 \
+    libatk-bridge2.0-0 \
+    libatk1.0-0 \
+    libcups2 \
+    libdbus-1-3 \
+    libgdk-pixbuf2.0-0 \
+    libnspr4 \
+    libnss3 \
+    libx11-xcb1 \
+    libxcomposite1 \
+    libxdamage1 \
+    libxrandr2 \
+    xdg-utils \
+    ffmpeg \
     && rm -rf /var/lib/apt/lists/*
 
 # Set environment variables for Chrome
 ENV CHROME_BIN=/usr/bin/chromium
 ENV PATH=$PATH:/usr/bin/chromium
 
-# Set work directory
-WORKDIR /app
-
-# Copy project files
-COPY . /app
-
 # Install Python dependencies
-RUN pip install --no-cache-dir --upgrade pip \
-    && pip install --no-cache-dir -r requirements.txt
+WORKDIR /app
+COPY . /app
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Expose port for Flask
+# Expose Flask port
 EXPOSE 5000
 
-# Command to run the Flask app
+# Force Python to flush logs
+ENV PYTHONUNBUFFERED=1
+
+# Run the Flask app
 CMD ["python", "tele.py"]
