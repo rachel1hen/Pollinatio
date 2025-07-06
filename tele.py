@@ -171,7 +171,7 @@ def process_url(chat_id, url):
     
     send_telegram_message(chat_id, f"📝 Extracted content:\n\n{content}")
     content = re.sub(r'\n+', ' ', content)
-    json_file_path = generate_data(content)
+    await json_file_path = generate_data(content)
     if not json_file_path:
         send_telegram_message(chat_id, "❌ Failed to generate TTS data")
         return
