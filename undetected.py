@@ -8,6 +8,9 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+import logging
+
+logging.basicConfig(level=logging.INFO)
 
 # Configuration
 TARGET_URL = "https://copilot.microsoft.com/chats"  # Change to Copilot URL if needed
@@ -69,6 +72,7 @@ def generate_data(text):
       
 
     try:
+        logging.info("Starting data generation...")
         # Access target URL
         driver.get(TARGET_URL)
         time.sleep(6)
@@ -94,6 +98,7 @@ def generate_data(text):
         # Get page content
         page_content = driver.page_source
         soup = BeautifulSoup(driver.page_source, "html.parser")
+        logging.info("Reached.... Searching code")
 
         # Find the <h2> tag with text "Copilot said"
         h2 = soup.find("h2", string=lambda t: t and "Copilot said" in t)
@@ -120,7 +125,8 @@ def generate_data(text):
             return None
 
     except Exception as e:
-        print(f"Error occurred: {str(e)}")
+        logging.info(f"Error occurred: {str(e)}")
+        
         return None
 
     finally:
