@@ -8,7 +8,7 @@ import trafilatura
 from flask import Flask, request
 import logging
 import edge_tts
-from undetected import generate_data
+#from undetected import generate_data
 from deepseek_edgetts import generate_tts
 import io
 import asyncio
@@ -18,6 +18,7 @@ app = Flask(__name__)
 # Get tokens from environment variables
 TELEGRAM_TOKEN = os.environ.get('TELEGRAM_TOKEN')
 POLLINATIONS_TOKEN = os.environ.get('POLLINATIONS_TOKEN')
+api_key = os.environ.get('API_KEY')
 
 # Validate tokens
 if not TELEGRAM_TOKEN or not POLLINATIONS_TOKEN:
@@ -35,78 +36,6 @@ logger = logging.getLogger("StoryBot")
 # URL validation regex
 #URL_REGEX = re.compile(r'https?://[^\s<>"']+|www\.[^\s<>"']+')
 URL_REGEX = re.compile(r"https?://[^\s<>\"']+|www\.[^\s<>\"']+")
-
-def generate_tts_with_edge_tts(json_file_path):
-    """
-    Generate TTS audio using Edge TTS for each entry in the JSON file.
-    The JSON is a list of [author, emotion, text, gender].
-    SSML tags in 'text' are ignored by edge_tts local, so we try to extract prosody info and apply as best as possible.
-    Returns: bytes of concatenated audio in ogg_opus format.
-    """
-
-    # Helper to extract prosody info from SSML if possible
-    def extract_prosody(text):
-        # Defaults
-        rate = "0%"
-        pitch = "0Hz"
-        volume = "0%"
-        # Try to extract from <prosody ...> tag
-        m = re.search(r'<prosody([^>]*)>', text)
-        if m:
-            attrs = m.group(1)
-            rate_m = re.search(r'rate="([^"]+)"', attrs)
-            pitch_m = re.search(r'pitch="([^"]+)"', attrs)
-            volume_m = re.search(r'volume="([^"]+)"', attrs)
-            if rate_m:
-                rate = rate_m.group(1)
-            if pitch_m:
-                pitch = pitch_m.group(1)
-            if volume_m:
-                volume = volume_m.group(1)
-        # Remove all SSML tags for edge_tts local
-        safe_text = re.sub(r'<[^>]+>', '', text)
-        return safe_text, rate, pitch, volume
-
-    # Map gender to edge_tts voice
-    def get_voice(gender):
-        # You can expand this mapping as needed
-        if gender == "male":
-            return "en-US-GuyNeural"
-        elif gender == "female":
-            return "en-US-JennyNeural"
-        else:
-            return "en-US-JennyNeural"
-
-    async def synthesize_all(entries):
-        audio_bytes = io.BytesIO()
-        for entry in entries:
-            author, emotion, text, gender = entry
-            safe_text, rate, pitch, volume = extract_prosody(text)
-            voice = get_voice(gender)
-            try:
-                communicate = edge_tts.Communicate(
-                    text=safe_text,
-                    voice=voice,
-                    rate=rate,
-                    pitch=pitch,
-                    volume=volume
-                )
-                async for chunk in communicate.stream():
-                    if chunk["type"] == "audio":
-                        audio_bytes.write(chunk["data"])
-            except Exception as e:
-                logger.error(f"Error generating TTS for '{safe_text}': {e}")
-        return audio_bytes.getvalue()
-
-    with open(json_file_path, "r", encoding="utf-8") as file:
-        data = json.load(file)
-
-    try:
-        audio_data = asyncio.run(synthesize_all(data))
-        return audio_data
-    except Exception as e:
-        logger.error(f"Error generating TTS: {e}")
-        return None
 
 def send_telegram_message(chat_id, text):
     """Send text message via Telegram API."""
@@ -171,12 +100,44 @@ def process_url(chat_id, url):
     
     send_telegram_message(chat_id, f"📝 Extracted content:\n\n{content}")
     content = re.sub(r'\n+', ' ', content)
-    json_file_path = generate_data(content)
-    if not json_file_path:
+    #json_file_path = generate_data(content)
+
+
+    prompt = f"""You are a helpful assistant. Read the following story and extract all dialogue and narration into a JSON array.
+Each element in the array must follow this format: [actorName, Emotion, textSpoken, gender] 
+Rules to follow strictly: 1. Use quotation marks to extract dialogue. 2. Include narration with "actorName" as "narration" and gender as null. 
+3. Set Emotion based on cues like “mocked”, “roared”, “angrily”, etc., or null if none. 4. Derive gender from the name, use best judgment if unclear. 
+5. Do not skip any part of the story — include every sentence. 6. Output only the JSON array — no explanations, no extra text. 
+7. Wrap the entire JSON array inside a markdown code block (triple backticks), specifying json for syntax highlighting. 
+Now process this story:\n{content}
+"""
+    url = "https://api.groq.com/openai/v1/chat/completions"
+    
+    headers = {
+    "Authorization": f"Bearer {api_key}",
+    "Content-Type": "application/json"
+    }
+    payload = {
+    "model": "gemma2-9b-it",  # Replace with "gemma-2-9b-it" if that's the exact model identifier
+    "messages": [
+        {"role": "user", "content": prompt}
+    ],
+    "temperature": 0.2
+}
+
+    response = requests.post(url, headers=headers, json=payload)
+    print(response.json()["choices"][0]["message"]["content"])
+
+    json_content = response.json()["choices"][0]["message"]["content"]
+    send_telegram_message(chat_id, f"📜 Extracted JSON content:\n```json\n{json_content}\n```")
+    audio_data = generate_tts(json_content)
+
+    if not audio_data:
         send_telegram_message(chat_id, "❌ Failed to generate TTS data")
         return
-    audio_data = generate_tts_with_edge_tts(json_file_path)
     send_telegram_audio(chat_id, audio_data)
+    # if not json_file_path:
+
 
 
 @app.route('/webhook', methods=['POST'])
