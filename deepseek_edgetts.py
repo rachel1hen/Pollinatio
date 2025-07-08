@@ -136,6 +136,14 @@ def generate_tts(json_path):
     # with open(json_path, "r",encoding="utf-8") as file:
     #     data = json.load(file)  # Parses the list of lists
 
+    json_path.strip()
+    if json_path.startswith("```json"):
+        json_path = json_path[7:].strip()
+    elif json_path.startswith("```"):
+        json_path = json_path[3:].strip()
+
+    if json_path.endswith("```"):
+        json_path = json_path[:-3].strip()
     if json_path.strip().startswith("```json"):
         json_path = json_path.strip().removeprefix("```json").removesuffix("```")
 
