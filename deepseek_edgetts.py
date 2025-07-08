@@ -3,8 +3,13 @@ import os
 import tempfile
 import subprocess
 import json
+import re
+import logging
 import edge_tts
 from pydub import AudioSegment
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logger = logging.getLogger("StoryBot")
 
 VOICE_MAPPING = {
     "narration": "en-GB-LibbyNeural",
@@ -74,8 +79,12 @@ async def generate_audiobook(data, output_filename="output.mp3"):
         # Generate silence file
         silence_file = os.path.join(tmpdir, "silence.mp3")
         create_silence(500, silence_file)
-        
+
         for idx, line in enumerate(data):
+            if not isinstance(line, list) or len(line) != 4:
+                print(f"Skipping invalid line {idx}: {line}")
+                logger.info(f"Skipping invalid line {idx}: {line}")
+                continue
             speaker, _, text, gender = line
             
             # Skip empty text
@@ -124,9 +133,9 @@ def generate_tts(json_path):
     
     This function is just a placeholder and can be removed or modified as needed.
     """
-
     # with open(json_path, "r",encoding="utf-8") as file:
     #     data = json.load(file)  # Parses the list of lists
+
     if json_path.strip().startswith("```json"):
         json_path = json_path.strip().removeprefix("```json").removesuffix("```")
 
@@ -136,5 +145,3 @@ def generate_tts(json_path):
 # Example usage:
 if __name__ == "__main__":
     generate_tts()
-    # You can also call main() with your own data
-    # data = [["narration", None
