@@ -124,16 +124,10 @@ def generate_tts(json_path):
     
     This function is just a placeholder and can be removed or modified as needed.
     """
-    # input_data = [
-    #     ["narration", None, "The golden divine soul clearly hadn't expected Chen Ping to unleash such a rogue.", None],
-    #     ["narration", None, "It froze for a moment before roaring in anger,", None],
-    #     ["Barbarian Clan ancestor", "angry", "How dare you! I am the ancestor of the Barbarian Clan, how dare a demon like you defile me!", "male"],
-    #     ["Red Cloud Demon Lord", "mocking", "Ancestor?", "male"],
-    #     ["narration", None, "Red Cloud Demon Lord scoffed, circling the divine soul before suddenly pointing at a crack in its battle armour and laughing loudly,", None]
-    # ]
-    with open(json_path, "r",encoding="utf-8") as file:
-        data = json.load(file)  # Parses the list of lists
-    output_file = main(data)
+
+    # with open(json_path, "r",encoding="utf-8") as file:
+    #     data = json.load(file)  # Parses the list of lists
+    output_file = main(json_path)
     print(f"Audiobook generated at: {output_file}")
     
 # Example usage:
