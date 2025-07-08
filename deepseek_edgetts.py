@@ -146,8 +146,8 @@ def generate_tts(json_path):
         json_path = json_path[:-3].strip()
     if json_path.strip().startswith("```json"):
         json_path = json_path.strip().removeprefix("```json").removesuffix("```")
-
-    output_file = main(json_path)
+    data = json.loads(json_path)
+    output_file = main(data)
     print(f"Audiobook generated at: {output_file}")
     
 # Example usage:
