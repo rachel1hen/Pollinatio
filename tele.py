@@ -51,7 +51,7 @@ def send_telegram_message(chat_id, text):
 def send_telegram_audio(chat_id, audio_data):
     """Send audio file via Telegram API."""
     try:
-        files = {'audio': ('audio.ogg', audio_data, 'audio/ogg')}
+        files = {'audio': ('audio.mp3', audio_data, 'audio/mpeg')}
         data = {'chat_id': chat_id}
         response = requests.post(TELEGRAM_SEND_AUDIO_URL, files=files, data=data, timeout=15)
         response.raise_for_status()
@@ -111,7 +111,7 @@ Rules to follow strictly: 1. Use quotation marks to extract dialogue. 2. Include
 Now process this story:\n{content}
 """
     url = "https://api.groq.com/openai/v1/chat/completions"
-    api_key =  os.environ.get('API_KEY')
+    api_key = os.environ.get('API_KEY')
     headers = {
     "Authorization": f"Bearer {api_key}",
     "Content-Type": "application/json"
@@ -130,13 +130,20 @@ Now process this story:\n{content}
     json_content = response.json()["choices"][0]["message"]["content"]
     logger.info(f"Extracted JSON content: {json_content}")
     send_telegram_message(chat_id, f"📜 Extracted JSON content:\n```json\n{json_content}\n```")
-    audio_data = generate_tts(json_content)
-
-    if not audio_data:
+    audio_path = generate_tts(json_content)
+    if not audio_path:
         send_telegram_message(chat_id, "❌ Failed to generate TTS data")
         return
-    send_telegram_audio(chat_id, audio_data)
-    # if not json_file_path:
+    try:
+        with open(audio_path, 'rb') as audio_file:
+            send_telegram_audio(chat_id, audio_file)
+    finally:
+        if os.path.exists(audio_path):
+            try:
+                os.remove(audio_path)
+                logger.info(f"Deleted audio file: {audio_path}")
+            except Exception as e:
+                logger.error(f"Failed to delete audio file: {e}")
 
 
 
