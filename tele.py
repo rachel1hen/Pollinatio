@@ -18,7 +18,6 @@ app = Flask(__name__)
 # Get tokens from environment variables
 TELEGRAM_TOKEN = os.environ.get('TELEGRAM_TOKEN')
 POLLINATIONS_TOKEN = os.environ.get('POLLINATIONS_TOKEN')
-api_key = os.environ.get('API_KEY')
 
 # Validate tokens
 if not TELEGRAM_TOKEN or not POLLINATIONS_TOKEN:
@@ -112,7 +111,7 @@ Rules to follow strictly: 1. Use quotation marks to extract dialogue. 2. Include
 Now process this story:\n{content}
 """
     url = "https://api.groq.com/openai/v1/chat/completions"
-    
+    api_key =  os.environ.get('API_KEY')
     headers = {
     "Authorization": f"Bearer {api_key}",
     "Content-Type": "application/json"
@@ -129,6 +128,7 @@ Now process this story:\n{content}
     print(response.json()["choices"][0]["message"]["content"])
 
     json_content = response.json()["choices"][0]["message"]["content"]
+    logger.info(f"Extracted JSON content: {json_content}")
     send_telegram_message(chat_id, f"📜 Extracted JSON content:\n```json\n{json_content}\n```")
     audio_data = generate_tts(json_content)
 
