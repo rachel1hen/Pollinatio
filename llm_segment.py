@@ -2,6 +2,7 @@ import os
 import json
 import re
 import requests
+import logging
 
 # === CONFIG ===
 CHAPTERS_DIR = "chapters"
@@ -11,6 +12,14 @@ OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 
 GROQ_MODEL = "llama-3.1-70b-versatile"
 OPENROUTER_MODEL = "meta-llama/llama-3.1-70b-instruct"
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(message)s',
+    stream=sys.stdout,  # Ensure logs go to stdout (GitHub Actions captures this)
+)
+
+logging.info("Logging started")
 
 # === PROMPT ===
 SYSTEM_PROMPT = """You are given a novel chapter. Your task is to split it into a JSON array where each item has two keys:
@@ -100,6 +109,7 @@ def main():
             continue
 
         print(f"Processing chapter {chapter_num}...",flush=True)
+        logging.info("Processing chapter ",chapter_num)
 
         with open(os.path.join(CHAPTERS_DIR, chapter_file), "r", encoding="utf-8") as f:
             chapter_text = f.read().strip()
@@ -109,17 +119,21 @@ def main():
             print(f"output {raw_output}",flush=True)
         except Exception as e:
             print(f"GROQ failed for chapter {chapter_num}: {e}, trying OpenRouter...",flush=True)
+            logging.info("GROQ failed")
             raw_output = call_openrouter(chapter_text)
 
         try:
             parsed_json = parse_llm_output(raw_output)
             print(f"output1 {parsed_json}",flush=True)
+            logging.info(parsed_json)
         except Exception as e:
             print(f"Failed to parse LLM output for chapter {chapter_num}: {e}",flush=True)
+             logging.info("Failed to parse LLM")
             continue
 
         with open(output_file, "w", encoding="utf-8") as f:
             print(f"Printing....",flush=True)
+            logging.info("Printing....")
             json.dump(parsed_json, f, ensure_ascii=False, indent=2)
 
         print(f"Saved {output_file}")
