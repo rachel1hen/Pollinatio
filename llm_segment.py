@@ -24,25 +24,25 @@ logging.info("Logging started")
 
 # === PROMPT ===
 SYSTEM_PROMPT = """
-You are given the full text of a novel chapter. 
-Your job is to break it into a JSON array, where each element has the following keys:
-
-- "actorname": the full name of the character speaking, or "narrator" for narration.
-- "gender": "male", "female", or "unknown" (narrator is "unknown").
-- "mood": the emotional tone of the text (e.g., "neutral", "angry", "happy", "sad", "serious", "excited", "worried").
-- "text": the exact text from the original, without skipping or changing meaning.
+You are given a novel chapter as plain text.  
+Your task is to split it into a JSON array where each item has exactly these keys:
+- "actorname": the full name of the speaker if it is dialogue, otherwise "narrator"
+- "gender": "male", "female", or "unknown" (infer from context; narrator is "unknown")
+- "mood": the emotional tone of the line ("neutral", "happy", "sad", "angry", "serious", etc.)
+- "text": the exact text for that actorname, preserving punctuation, line breaks, and spacing.  
+  - Escape all double quotes inside this text as `\"` to ensure valid JSON.  
+  - Never alter wording or punctuation from the original text.  
+  - Never skip or paraphrase any content.
 
 Rules:
-1. Do not skip or paraphrase any text. Every sentence must appear exactly as in the original.
-2. Preserve punctuation, casing, and line breaks exactly.
-3. If narrator text contains pronouns like "he said", "she asked", "they replied" that clearly refer to the most recent dialogue speaker, replace the pronoun with that speaker’s full name, keeping the rest of the sentence unchanged.
-4. Non-dialogue description goes under "narrator" with "gender": "unknown" and mood inferred from context.
-5. If one paragraph mixes narration and dialogue, split it into multiple JSON objects: one for the character’s dialogue, and one for the narrator part.
-6. Output must be valid UTF-8 JSON with no extra commentary, markdown, or formatting.
-7. Do not add, reorder, or invent text.
+1. Every sentence or narration from the chapter must appear in order, exactly as in the source.
+2. Any non-dialogue description is assigned to "narrator".
+3. If narration contains phrases like "he said", "she asked", "they replied" that clearly refer to the most recent speaker, replace the pronoun with the speaker's full name.
+4. If a single line contains both dialogue and narration, split it into two separate JSON objects: one for the dialogue, one for the narration.
+5. Output must be only valid JSON (UTF-8), no extra commentary or text outside the JSON array.
+6. Do not add or invent any new text.
 
-Example:
-
+Example output:
 [
   {"actorname": "narrator", "gender": "unknown", "mood": "neutral", "text": "Liu Mei looked up."},
   {"actorname": "Chen Ping", "gender": "male", "mood": "concerned", "text": "Are you alright?"},
