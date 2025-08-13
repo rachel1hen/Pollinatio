@@ -128,7 +128,8 @@ def main():
             logging.info(parsed_json)
         except Exception as e:
             print(f"Failed to parse LLM output for chapter {chapter_num}: {e}",flush=True)
-             logging.info("Failed to parse LLM")
+            logging.info("Failed to parse LLM")
+            logging.info(raw_output)
             continue
 
         with open(output_file, "w", encoding="utf-8") as f:
