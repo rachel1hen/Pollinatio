@@ -40,7 +40,7 @@ jobs:
         fi
         
     - name: Run LLM script
-      run: python -u llm_segment.py
+      run: python llm_segment.py
 
     - name: Show contents of LLM_output
       run: |
