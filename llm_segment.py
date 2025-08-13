@@ -94,7 +94,8 @@ def main():
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     if not os.path.exists(OUTPUT_DIR):
       os.makedirs(OUTPUT_DIR)
- 
+    logging.info(f"api key  {GROQ_API_KEY}")
+
     chapter_files = sorted(
         [f for f in os.listdir(CHAPTERS_DIR) if f.startswith("chapter_") and f.endswith(".txt")],
         key=lambda x: int(re.search(r"\d+", x).group())
