@@ -1,0 +1,34 @@
+name: LLM Segment Generator
+
+on:
+  workflow_dispatch:  # run manually from Actions tab
+
+jobs:
+  run-llm:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: pip install requests
+
+    - name: Run LLM script
+      env:
+        GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+        OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+      run: python llm_segment.py
+
+    - name: Commit and push results
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        git add LLM_output/
+        git commit -m "Update LLM output" || echo "No changes to commit"
+        git push
