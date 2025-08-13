@@ -18,19 +18,6 @@ jobs:
 
     - name: Install dependencies
       run: pip install requests
-      
-      run: |
-        if [ -z "$GROQ_API_KEY" ]; then
-          echo "GROQ_API_KEY is NOT set"
-        else
-          echo "GROQ_API_KEY is set"
-        fi
-
-        if [ -z "$OPENROUTER_API_KEY" ]; then
-          echo "OPENROUTER_API_KEY is NOT set"
-        else
-          echo "OPENROUTER_API_KEY is set"
-        fi
         
     - name: Run LLM script
       env:
@@ -48,6 +35,8 @@ jobs:
         else
           echo "OPENROUTER_API_KEY is set"
         fi
+        
+    - name: Run LLM script
       run: python llm_segment.py
 
     - name: Commit and push results
