@@ -82,6 +82,8 @@ def parse_llm_output(raw_output):
 
 def main():
     os.makedirs(OUTPUT_DIR, exist_ok=True)
+    if not os.path.exists(OUTPUT_DIR):
+      os.makedirs(OUTPUT_DIR)
     if not GROQ_API_KEY:
         return 
     chapter_files = sorted(
