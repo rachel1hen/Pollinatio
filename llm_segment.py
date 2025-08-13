@@ -106,17 +106,20 @@ def main():
 
         try:
             raw_output = call_groq(chapter_text)
+            print(f"output {raw_output}")
         except Exception as e:
             print(f"GROQ failed for chapter {chapter_num}: {e}, trying OpenRouter...")
             raw_output = call_openrouter(chapter_text)
 
         try:
             parsed_json = parse_llm_output(raw_output)
+            print(f"output1 {parsed_json}")
         except Exception as e:
             print(f"Failed to parse LLM output for chapter {chapter_num}: {e}")
             continue
 
         with open(output_file, "w", encoding="utf-8") as f:
+            print(f"Printing....")
             json.dump(parsed_json, f, ensure_ascii=False, indent=2)
 
         print(f"Saved {output_file}")
