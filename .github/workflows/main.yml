@@ -42,6 +42,11 @@ jobs:
     - name: Run LLM script
       run: python llm_segment.py
 
+    - name: Show contents of LLM_output
+      run: |
+        echo "Listing LLM_output:"
+        ls -R LLM_output || echo "LLM_output not found"
+    
     - name: Commit and push results
       run: |
         git config --global user.name "github-actions[bot]"
