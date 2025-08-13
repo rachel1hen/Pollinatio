@@ -11,7 +11,7 @@ OUTPUT_DIR = "LLM_output"
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 
-GROQ_MODEL = "llama-3.1-70b-versatile"
+GROQ_MODEL = "gemma2-9b-it"
 OPENROUTER_MODEL = "meta-llama/llama-3.1-70b-instruct"
 
 logging.basicConfig(
@@ -109,7 +109,7 @@ def main():
             continue
 
         print(f"Processing chapter {chapter_num}...",flush=True)
-        logging.info("Processing chapter ",chapter_num)
+        logging.info(f"Processing chapter {chapter_num}")
 
         with open(os.path.join(CHAPTERS_DIR, chapter_file), "r", encoding="utf-8") as f:
             chapter_text = f.read().strip()
