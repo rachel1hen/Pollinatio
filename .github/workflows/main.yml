@@ -19,7 +19,7 @@ jobs:
     - name: Install dependencies
       run: pip install requests
         
-    - name: Run LLM script
+    - name: Run LLM script debbug
       env:
         GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
         OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
