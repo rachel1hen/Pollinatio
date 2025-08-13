@@ -3,6 +3,7 @@ import json
 import re
 import requests
 import logging
+import sys
 
 # === CONFIG ===
 CHAPTERS_DIR = "chapters"
