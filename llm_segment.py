@@ -96,30 +96,30 @@ def main():
         output_file = os.path.join(OUTPUT_DIR, f"chapter_{chapter_num}.json")
 
         if os.path.exists(output_file):
-            print(f"Skipping chapter {chapter_num} (already processed).")
+            print(f"Skipping chapter {chapter_num} (already processed).",flush=True)
             continue
 
-        print(f"Processing chapter {chapter_num}...")
+        print(f"Processing chapter {chapter_num}...",flush=True)
 
         with open(os.path.join(CHAPTERS_DIR, chapter_file), "r", encoding="utf-8") as f:
             chapter_text = f.read().strip()
 
         try:
             raw_output = call_groq(chapter_text)
-            print(f"output {raw_output}")
+            print(f"output {raw_output}",flush=True)
         except Exception as e:
-            print(f"GROQ failed for chapter {chapter_num}: {e}, trying OpenRouter...")
+            print(f"GROQ failed for chapter {chapter_num}: {e}, trying OpenRouter...",flush=True)
             raw_output = call_openrouter(chapter_text)
 
         try:
             parsed_json = parse_llm_output(raw_output)
-            print(f"output1 {parsed_json}")
+            print(f"output1 {parsed_json}",flush=True)
         except Exception as e:
-            print(f"Failed to parse LLM output for chapter {chapter_num}: {e}")
+            print(f"Failed to parse LLM output for chapter {chapter_num}: {e}",flush=True)
             continue
 
         with open(output_file, "w", encoding="utf-8") as f:
-            print(f"Printing....")
+            print(f"Printing....",flush=True)
             json.dump(parsed_json, f, ensure_ascii=False, indent=2)
 
         print(f"Saved {output_file}")
