@@ -2,7 +2,10 @@ name: LLM Segment Generator
 
 on:
   workflow_dispatch:  # run manually from Actions tab
-
+  
+permissions:
+  contents: write
+  
 jobs:
   run-llm:
     runs-on: ubuntu-latest
