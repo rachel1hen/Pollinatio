@@ -104,7 +104,7 @@ def main():
     for chapter_file in chapter_files:
         chapter_num = re.search(r"\d+", chapter_file).group()
         output_file = os.path.join(OUTPUT_DIR, f"chapter_{chapter_num}.json")
-
+        logging.info(chapter_num)
         if os.path.exists(output_file):
             print(f"Skipping chapter {chapter_num} (already processed).",flush=True)
             continue
