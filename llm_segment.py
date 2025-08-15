@@ -24,30 +24,23 @@ logging.info("Logging started")
 
 # === PROMPT ===
 SYSTEM_PROMPT = """
-You are given a novel chapter as plain text.  
-Your task is to split it into a JSON array where each item has exactly these keys:
-- "actorname": the full name of the speaker if it is dialogue, otherwise "narrator"
-- "gender": "male", "female", or "unknown" (infer from context; narrator is "unknown")
-- "mood": the emotional tone of the line ("neutral", "happy", "sad", "angry", "serious", etc.)
-- "text": the exact text for that actorname, preserving punctuation, line breaks, and spacing.  
-  - Escape all double quotes inside this text as `\"` to ensure valid JSON.  
-  - Never alter wording or punctuation from the original text.  
-  - Never skip or paraphrase any content.
+You are given a story. Split it into segments where each segment is a single continuous piece of narration or a single character's spoken line.
+
+For each segment, output a line in the following tab-separated format (TSV), without quotes or extra punctuation around the fields:
+actorname<TAB>gender<TAB>mood<TAB>text
+
+- actorname: "narrator" for narration, or the exact name of the character speaking.
+- gender: male, female, or unknown.
+- mood: A single descriptive word for the tone of delivery, useful for TTS pitch/emphasis adjustment (e.g., calm, angry, sad, excited, concerned, neutral, etc.).
+- text: The exact narration or dialogue, preserving every word, punctuation mark, and detail exactly as in the source. Do not summarize, skip, or reword any part. Include surrounding narration like "Liu Mei looked up." or "Chen Ping said." in the narrator's segment.
 
 Rules:
-1. Every sentence or narration from the chapter must appear in order, exactly as in the source.
-2. Any non-dialogue description is assigned to "narrator".
-3. If narration contains phrases like "he said", "she asked", "they replied" that clearly refer to the most recent speaker, replace the pronoun with the speaker's full name.
-4. If a single line contains both dialogue and narration, split it into two separate JSON objects: one for the dialogue, one for the narration.
-5. Output must be only valid JSON (UTF-8), no extra commentary or text outside the JSON array.
-6. Do not add or invent any new text.
-
-Example output:
-[
-  {"actorname": "narrator", "gender": "unknown", "mood": "neutral", "text": "Liu Mei looked up."},
-  {"actorname": "Chen Ping", "gender": "male", "mood": "concerned", "text": "Are you alright?"},
-  {"actorname": "narrator", "gender": "unknown", "mood": "neutral", "text": "Chen Ping said."}
-]
+1. Keep 100% of the story in the output. Do not skip or shorten anything.
+2. Do not remove or merge narration between dialogues.
+3. If a dialogue has an attribution (e.g., 'he said to Chen Ping'), split it so the attribution is a narrator segment, and the spoken text is a separate character segment.
+4. Use only one tab character between fields.
+5. Do not output any extra lines or headers — only TSV rows.
+6. All output must be valid UTF-8 text with no unescaped special characters.
 """
 
 def call_groq(chapter_text):
@@ -110,7 +103,7 @@ def main():
 
     for chapter_file in chapter_files:
         chapter_num = re.search(r"\d+", chapter_file).group()
-        output_file = os.path.join(OUTPUT_DIR, f"chapter_{chapter_num}.json")
+        output_file = os.path.join(OUTPUT_DIR, f"chapter_{chapter_num}.txt")
         logging.info(chapter_num)
         if os.path.exists(output_file):
             print(f"Skipping chapter {chapter_num} (already processed).",flush=True)
@@ -131,8 +124,9 @@ def main():
             raw_output = call_openrouter(chapter_text)
 
         try:
-            parsed_json = parse_llm_output(raw_output)
-            print(f"output1 {parsed_json}",flush=True)
+            parsed_json = raw_output
+            # parsed_json = parse_llm_output(raw_output)
+            # print(f"output1 {parsed_json}",flush=True)
             logging.info(parsed_json)
         except Exception as e:
             print(f"Failed to parse LLM output for chapter {chapter_num}: {e}",flush=True)
