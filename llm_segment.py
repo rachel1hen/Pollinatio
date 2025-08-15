@@ -26,6 +26,12 @@ logging.info("Logging started")
 SYSTEM_PROMPT = """
 You are given a story. Split it into segments where each segment is a single continuous piece of narration or a single character's spoken line.
 
+Read the text carefully and identify every piece of dialogue and narration.
+If the dialogue includes phrases like "he said" or "she asked" and the speaker can be identified from context, replace the pronoun with the exact full character name.
+Do NOT replace if there is no clear reference.
+Never assign narrator to a direct quote unless it’s truly the narrator speaking.
+Keep all original punctuation inside the text field exactly as it appears.
+
 For each segment, output a line in the following tab-separated format (TSV), without quotes or extra punctuation around the fields:
 actorname<TAB>gender<TAB>mood<TAB>text
 
