@@ -48,6 +48,17 @@ Rules:
 4. Use only one tab character between fields.
 5. Do not output any extra lines or headers — only TSV rows.
 6. All output must be valid UTF-8 text with no unescaped special characters.
+7. Read left-to-right. Dialogue is text inside “curly quotes” or "straight quotes".
+8. Split mixed lines: dialogue becomes its own row; surrounding narration becomes separate narrator rows.
+9. Narration pronouns: if narration contains an attribution pronoun referring to the most recent clear speaker (e.g., “he said”, “she asked”, “they replied”), replace ONLY the pronoun with that speaker’s exact name (e.g., “Chen Ping said”). Do not otherwise change the text.
+10. Attribution heuristics for dialogue:
+   a) SAME SENTENCE tags win: “Chen Ping said, ‘…’”, “‘…,’ said Liu Mei”, “‘…,’ Liu Mei asked”.
+   b) If no same-sentence tag, use nearest preceding/following sentence with a speech verb + name (said, asked, replied, shouted, whispered, scoffed, roared, murmured, muttered, exclaimed).
+   c) If still ambiguous (<50% confidence), set actorname to "narrator" (allowed for quoted text only when truly ambiguous).
+   d) If multiple consecutive quoted lines appear with no new attributions, prefer the last explicitly named speaker.
+11. Never drop, summarize, or reorder text. Every part of the chapter must appear exactly once in order across the TSV rows.
+12. Use exactly ONE tab between fields. Output ONLY TSV lines—no headers, no extra commentary.
+
 """
 
 def call_groq(chapter_text):
