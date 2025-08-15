@@ -1,6 +1,7 @@
 import os
 import json
 import re
+import time
 import requests
 import logging
 import sys
@@ -137,9 +138,18 @@ def main():
             raw_output = call_groq(chapter_text)
             print(f"output {raw_output}",flush=True)
         except Exception as e:
-            print(f"GROQ failed for chapter {chapter_num}: {e}, trying OpenRouter...",flush=True)
-            logging.info("GROQ failed")
-            raw_output = call_openrouter(chapter_text)
+            error_str = str(e).lower()
+            if  "429" in error_str or "rate limit" in error_str:
+                logging.info("⚠ Rate limit hit. Waiting 60 seconds...")
+                time.sleep(60)
+                raw_output = call_groq(chapter_text)
+            elif "503" in error_str or "timeout" in error_str:
+                logging.info("⚠ Service busy or timed out. Waiting 30 seconds...")
+                time.sleep(30)
+                raw_output = call_groq(chapter_text)
+            # print(f"GROQ failed for chapter {chapter_num}: {e}, trying OpenRouter...",flush=True)
+            # logging.info("GROQ failed")
+            # raw_output = call_openrouter(chapter_text)
 
         try:
             parsed_json = raw_output
