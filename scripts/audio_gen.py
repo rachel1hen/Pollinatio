@@ -74,8 +74,8 @@ async def process_chapter(chapter_num, index, lines):
             indx = 1
             for line in lines:
                 
-                clean_line = line.encode().decode('unicode_escape')
-                parts = clean_line.split("\t")
+                # clean_line = line.encode().decode('unicode_escape')
+                parts = line.split("\\t")
                 actor, gender, mood, text = parts
                 if not text:
                     continue
