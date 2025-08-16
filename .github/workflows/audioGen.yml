@@ -2,7 +2,11 @@ name: Audio Generation
 
 on:
   workflow_dispatch:
-
+    inputs:
+      chapter_number:
+        description: 'Chapter number to process'
+        required: false
+        default: ''
 jobs:
   generate_audio:
     runs-on: ubuntu-latest
