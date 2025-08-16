@@ -114,14 +114,17 @@ def main():
     if not os.path.exists(OUTPUT_DIR):
       os.makedirs(OUTPUT_DIR)
     logging.info(f"api key  {GROQ_API_KEY}")
-
+    chapter_arg = sys.argv[1] if len(sys.argv) > 1 else ""
+    
     chapter_files = sorted(
         [f for f in os.listdir(CHAPTERS_DIR) if f.startswith("chapter_") and f.endswith(".txt")],
         key=lambda x: int(re.search(r"\d+", x).group())
     )
-
+    
     for chapter_file in chapter_files:
         chapter_num = re.search(r"\d+", chapter_file).group()
+        if chapter_arg and chapter_num != str(chapter_arg):
+            continue
         output_file = os.path.join(OUTPUT_DIR, f"chapter_{chapter_num}.txt")
         logging.info(chapter_num)
         if os.path.exists(output_file):
