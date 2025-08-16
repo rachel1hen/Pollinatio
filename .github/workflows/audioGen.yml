@@ -33,7 +33,7 @@ jobs:
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
         run: |
-          python audio_gen.py "${{ github.event.inputs.chapter_number }}"
+          python scripts/audio_gen.py "${{ github.event.inputs.chapter_number }}"
       
       - name: Commit updated processed list
         run: |
