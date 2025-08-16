@@ -56,8 +56,9 @@ def pick_chapter(chapter_arg=None):
     return None, None, lines
 
 async def process_chapter(chapter_num, index, lines):
-    tsv_path = os.path.join(CHAPTERS_DIR, f"chapter_{chapter_num}.tsv")
-    audio_path = os.path.join(AUDIO_DIR, f"chapter_{chapter_num}.mp3")
+    tsv_path = os.path.join(CHAPTERS_DIR, f"{chapter_num}")
+    chapter_number = chapter_num.split("_")[1] if "_" in chapter_num else chapter_num
+    audio_path = os.path.join(AUDIO_DIR, f"chapter_{chapter_number}.mp3")
     os.makedirs(AUDIO_DIR, exist_ok=True)
 
     chunks = []
