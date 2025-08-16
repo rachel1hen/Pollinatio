@@ -22,6 +22,8 @@ jobs:
           pip install edge-tts pydub googletrans==4.0.0-rc1 python-telegram-bot==20.6
 
       - name: Run audio generator
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
         run: |
           python audio_gen.py
       
