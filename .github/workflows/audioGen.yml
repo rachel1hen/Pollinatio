@@ -23,7 +23,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install edge-tts pydub googletrans==4.0.0-rc1 python-telegram-bot==20.6
+          pip install edge-tts pydub deep-translator python-telegram-bot==20.6
       
       - name: Clean text for audio generation
         run: |

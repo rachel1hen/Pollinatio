@@ -1,7 +1,8 @@
 import os
 import sys
 import re
-from googletrans import Translator
+from deep_translator import GoogleTranslator
+# from googletrans import Translator
 
 FLAGS_FILE = "audio_done.txt"
 CHAPTERS_DIR = "chapters"
@@ -46,7 +47,8 @@ def translate_chinese(text, translator):
     matches = chinese_pattern.findall(text)
     for match in set(matches):
         try:
-            translated = translator.translate(match, src='zh-cn', dest='en').text
+            translated = translator.translate(match)
+            # translated = translator.translate(match, src='zh-cn', dest='en').text
             text = text.replace(match, translated)
         except Exception as e:
             print(f"Translation failed for {match}: {e}")
@@ -54,7 +56,8 @@ def translate_chinese(text, translator):
 
 def cleanse_chapter(file_path):
     """Cleanse a single chapter file"""
-    translator = Translator()
+    translator = GoogleTranslator(source='zh-CN', target='en') 
+    # Translator()
     with open(file_path, "r", encoding="utf-8") as f:
         content = f.read()
 
