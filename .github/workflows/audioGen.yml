@@ -7,6 +7,10 @@ on:
         description: 'Chapter number to process'
         required: false
         default: ''
+        
+permissions:
+  contents: write
+  
 jobs:
   generate_audio:
     runs-on: ubuntu-latest
