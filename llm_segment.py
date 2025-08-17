@@ -39,6 +39,7 @@ actorname<TAB>gender<TAB>mood<TAB>text
 - mood: A single descriptive word for the tone of delivery, useful for TTS pitch/emphasis adjustment (e.g., calm, angry, sad, excited, concerned, neutral, etc.).
 - text: The exact narration or dialogue, preserving every word, punctuation mark, and detail exactly as in the source. Do not summarize, skip, or reword any part. Include surrounding narration like "Liu Mei looked up." or "Chen Ping said." in the narrator's segment.
 Important: Keep 100% of the story. Never skip or drop any sentence — narration or dialogue. Everything must appear once, in order.
+
 Rules:
 1. Keep 100% of the story in the output. Do not skip or shorten anything.
 2. Do not remove or merge narration between dialogues or starting of dialogues or end of it.
