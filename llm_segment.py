@@ -26,11 +26,8 @@ logging.info("Logging started")
 
 # === PROMPT ===
 SYSTEM_PROMPT = """
-You are given a story. Split it into segments where each segment is a single continuous piece of narration or a single character's spoken line.
-
 Read the text carefully and identify every piece of dialogue and narration.
 If the dialogue includes phrases like "he said" or "she asked" and the speaker can be identified from context, replace the pronoun with the exact full character name.
-Do NOT replace if there is no clear reference.
 Never assign narrator to a direct quote unless it’s truly the narrator speaking.
 Keep all original punctuation inside the text field exactly as it appears.
 
@@ -44,7 +41,7 @@ actorname<TAB>gender<TAB>mood<TAB>text
 
 Rules:
 1. Keep 100% of the story in the output. Do not skip or shorten anything.
-2. Do not remove or merge narration between dialogues.
+2. Do not remove or merge narration between dialogues or starting of dialogues or end of it.
 3. If a dialogue has an attribution (e.g., 'he said to Chen Ping'), split it so the attribution is a narrator segment, and the spoken text is a separate character segment.
 4. Use only one tab character between fields.
 5. Do not output any extra lines or headers — only TSV rows.
