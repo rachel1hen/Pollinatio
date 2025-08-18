@@ -4702,7 +4702,7 @@ chapter_523.txt,0,0
 chapter_5230.txt,1,1
 chapter_5231.txt,0,0
 chapter_5232.txt,0,0
-chapter_5233.txt,0,0
+chapter_5233.txt,1,1
 chapter_5234.txt,0,0
 chapter_5235.txt,0,0
 chapter_5236.txt,0,0
