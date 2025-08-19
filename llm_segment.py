@@ -12,7 +12,7 @@ OUTPUT_DIR = "LLM_output"
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 
-# GROQ_MODEL = "gemma2-9b-it"
+GROQ_MODEL_CLEANSE = "gemma2-9b-it"
 GROQ_MODEL = "llama-3.3-70b-versatile"
 OPENROUTER_MODEL = "meta-llama/llama-3.1-70b-instruct"
 
@@ -23,7 +23,83 @@ logging.basicConfig(
 )
 
 logging.info("Logging started")
+PROMPT_STORY_CORRECTIONS = """
+You are a text cleanup assistant. Your job is to clean and normalize raw story text while preserving meaning and formatting. The text may contain typos, censorship symbols, illegal characters, or broken formatting.
 
+Clean the following story while following all rules exactly.
+
+====================
+TASK:
+- Correct any obvious typos or spelling errors (e.g., "cla*s" → "class", "p*ss" → "piss").
+- Fix censored words by restoring their original forms (e.g., "b*stard" → "bastard").
+- Remove illegal or invisible characters (e.g., curly quotes, smart dashes, non-breaking spaces, control characters, or encoding errors).
+- Normalize punctuation (e.g., replace curly quotes with straight quotes, normalize em dashes to "--").
+- Fix broken line breaks or paragraph splits.
+- DO NOT change story meaning, word choice, tone, or character names.
+- DO NOT paraphrase or summarize.
+- DO NOT apply any formatting (like bold or tab-separated output).
+- DO NOT change paragraph order or structure.
+
+====================
+OUTPUT: Return the cleaned version of the same story.
+====================
+INPUT: [Story is Below]
+"""
+
+DIAGLOGUE_PROMPT = """
+You are a precise formatting assistant for creating an audio-friendly theater script from a cleaned narrative story.
+
+Your job is to convert the input story into a structured script using this strict tab-separated format:
+
+Speaker\tGender\tMood\tText
+
+====================
+FORMATTING RULES:
+- Use *literal* characters: "\t" (a backslash + t) between each field.
+- Each line of narration or dialogue must be a single output row.
+- Do NOT include any explanations, headings, or summaries.
+- No empty lines or merged lines.
+
+====================
+SPEAKER TAGGING:
+- Use actual character names as the Speaker if they are speaking.
+- Use "narrator" for all non-spoken description, scene-setting, or action.
+- If a speaker's name is unknown or not specified, label as "unknown".
+- Before a character’s first spoken line, include a narrator line introducing them:  
+  narrator\tunknown\tneutral\t[Character Name speaks.]
+
+====================
+GENDER TAGGING:
+- Use male, female, or unknown.
+- Infer based on context or name if possible. If unclear, use "unknown".
+
+====================
+MOOD TAGGING:
+Assign a fitting emotional tone to each line of dialogue based on how it’s said.  
+Choose from:  
+neutral, calm, nervous, angry, mocking, serious, joyful, sad, surprised, emotional, confident, commanding, respectful, cold, tense
+
+Be specific. Don’t default to “neutral” unless the tone is truly flat.
+
+====================
+DO:
+- Keep the wording of the story exactly as written.
+- Clearly separate narration from speech.
+- Label every line cleanly and consistently.
+
+DO NOT:
+- Change or rewrite any story content.
+- Add new text, names, or lines.
+- Skip or summarize anything.
+- Use real tab characters (always print backslash+t)
+
+====================
+INPUT: [Insert cleaned story text here]
+
+====================
+OUTPUT:
+Speaker\tGender\tMood\tText  
+"""
 # === PROMPT ===
 SYSTEM_PROMPT = """
 Read the text carefully and identify every piece of dialogue and narration.
@@ -60,6 +136,22 @@ Rules:
 
 """
 
+def call_groq_clense(chapter_text):
+    """Call GROQ API for segmentation."""
+    url = "https://api.groq.com/openai/v1/chat/completions"
+    headers = {"Authorization": f"Bearer {GROQ_API_KEY}"}
+    data = {
+        "model": GROQ_MODEL_CLEANSE,
+        "messages": [
+            {"role": "system", "content": PROMPT_STORY_CORRECTIONS},
+            {"role": "user", "content": chapter_text}
+        ],
+        "temperature": 0
+    }
+    r = requests.post(url, headers=headers, json=data, timeout=60)
+    r.raise_for_status()
+    return r.json()["choices"][0]["message"]["content"]
+
 def call_groq(chapter_text):
     """Call GROQ API for segmentation."""
     url = "https://api.groq.com/openai/v1/chat/completions"
@@ -67,7 +159,7 @@ def call_groq(chapter_text):
     data = {
         "model": GROQ_MODEL,
         "messages": [
-            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "system", "content": DIAGLOGUE_PROMPT},
             {"role": "user", "content": chapter_text}
         ],
         "temperature": 0
@@ -136,7 +228,8 @@ def main():
             chapter_text = f.read().strip()
 
         try:
-            raw_output = call_groq(chapter_text)
+            cleansed_data = call_groq_clense(chapter_text)
+            raw_output = call_groq(cleansed_data)
             print(f"output {raw_output}",flush=True)
         except Exception as e:
             error_str = str(e).lower()
