@@ -1,4 +1,4 @@
-chapter_10.txt,1,1
+chapter_10.txt,0,0
 chapter_100.txt,0,0
 chapter_1000.txt,0,0
 chapter_1001.txt,0,0
