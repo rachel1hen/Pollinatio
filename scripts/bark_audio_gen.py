@@ -6,8 +6,9 @@ from bark import SAMPLE_RATE, generate_audio
 import scipy.io.wavfile
 from pydub import AudioSegment
 import subprocess
+import uuid
 
-
+os.environ["XDG_CACHE_HOME"] = f"/tmp/bark_cache_{uuid.uuid4().hex}"
 AUDIO_DIR = "audio"
 CHAPTERS_DIR = "LLM_output"
 AUDIO_DONE_FILE = "audio_done.txt"
