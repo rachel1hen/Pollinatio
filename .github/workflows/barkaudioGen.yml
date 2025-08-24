@@ -90,12 +90,19 @@ jobs:
                 /usr/local/graalvm /opt/hostedtoolcache/CodeQL
               docker system prune -af || true
               sudo rm -rf /var/lib/mysql /var/lib/postgresql
+              sudo rm -rf /tmp/*
               sudo rm -rf $HOME/.cargo
               sudo rm -rf $HOME/.gem
               sudo rm -rf $HOME/.rustup
               sudo rm -rf $HOME/.nvm
               sudo rm -rf $HOME/.npm
               sudo rm -rf $HOME/.gradle
+              sudo rm -rf $HOME/.cache
+              sudo rm -rf /home/runner/.cache
+              
+      - name: Remove Cache
+        run: |
+              rm -rf /home/runner/.cache/huggingface/*
 
   
       - name: Set up Python
