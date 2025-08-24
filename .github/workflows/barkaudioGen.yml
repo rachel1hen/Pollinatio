@@ -53,7 +53,15 @@ jobs:
         - name: Install Bark & preload model
           run: |
             python -c "from bark import preload_models; preload_models()"
-  
+
+        - name: Print Bark model folders
+          run: |
+              echo "Bark cache (~/.cache/suno):"
+              ls -R ~/.cache/suno || echo "No Bark folder found"
+          
+              echo "Huggingface cache (~/.cache/huggingface):"
+              ls -R ~/.cache/huggingface || echo "No Hugging Face models found"
+              
         - name: Upload Bark model files
           uses: actions/upload-artifact@v4
           with:
@@ -87,10 +95,6 @@ jobs:
               sudo rm -rf $HOME/.npm
               sudo rm -rf $HOME/.gradle
 
-            
-      - name: Remove Cache
-        run: |
-              rm -rf /home/runner/.cache/huggingface/*
   
       - name: Set up Python
         uses: actions/setup-python@v5
