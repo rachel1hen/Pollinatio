@@ -15,6 +15,7 @@ jobs:
   generate_audio:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         chunk: [0,1,2]   # 10 chunks per workflow
 
