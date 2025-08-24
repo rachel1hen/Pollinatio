@@ -11,4 +11,5 @@ pydub
 selenium
 beautifulsoup4
 undetected-chromedriver
+aiohttp
 

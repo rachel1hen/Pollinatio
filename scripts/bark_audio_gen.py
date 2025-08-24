@@ -6,7 +6,7 @@ from bark import SAMPLE_RATE, generate_audio
 import scipy.io.wavfile
 from pydub import AudioSegment
 import subprocess
-import aiohttp
+
 
 AUDIO_DIR = "audio"
 CHAPTERS_DIR = "LLM_output"
