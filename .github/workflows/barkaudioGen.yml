@@ -114,7 +114,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: bark-models
-          path: ~/.cache/suno/bark
+          path: /home/runner/.cache/suno/bark_v0
           
       - name: Install Python Dependencies
         run: |
