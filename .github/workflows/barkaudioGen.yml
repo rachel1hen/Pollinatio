@@ -80,7 +80,6 @@ jobs:
                 /usr/local/graalvm /opt/hostedtoolcache/CodeQL
               docker system prune -af || true
               sudo rm -rf /var/lib/mysql /var/lib/postgresql
-              sudo rm -rf /tmp/*
               sudo rm -rf $HOME/.cargo
               sudo rm -rf $HOME/.gem
               sudo rm -rf $HOME/.rustup
