@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        chunk: [0,1,2,3,4,5]   # 10 chunks per workflow
+        chunk: [0,1,2]   # 10 chunks per workflow
 
     steps:
       - name: Checkout repo
