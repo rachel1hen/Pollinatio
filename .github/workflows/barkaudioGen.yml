@@ -66,7 +66,9 @@ jobs:
           uses: actions/upload-artifact@v4
           with:
             name: bark-models
-            path: /home/runner/.cache/suno/bark_v0
+            path: |
+              /home/runner/.cache/suno/bark_v0
+              /home/runner/.cache/huggingface/hub
             
   generate_audio:
     needs: setup
@@ -114,7 +116,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: bark-models
-          path: /home/runner/.cache/suno/bark_v0
+          path: /home/runner/.cache/
           
       - name: Install Python Dependencies
         run: |
