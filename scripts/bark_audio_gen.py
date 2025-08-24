@@ -134,7 +134,7 @@ async def process_chapter(chapter_num, index, lines):
                             chunks.append(silence_file)
 
                 
-    await asyncio.gather(*tasks)
+    await asyncio.gather(*tg)
     chunks = [f"{chapter_num}_{i}.mp3" for i in range(len(parts))]
     # Combine into final MP3
     combine_audio(chunks, audio_path)
