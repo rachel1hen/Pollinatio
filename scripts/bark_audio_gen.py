@@ -39,7 +39,7 @@ async def generate_tts(text, voice, path):
             "-af", "afftdn,loudnorm,highpass=f=100,lowpass=f=8000,acompressor",
             path
             ], check=True)
-            os.remove(wav_path)
+        os.remove(wav_path)
      except Exception as e:
         print(f"❌ Error generating TTS for {text[:30]}... : {e}")
 
