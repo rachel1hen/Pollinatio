@@ -1,7 +1,6 @@
 import os
 import csv
 import tempfile
-import asyncio
 from bark import SAMPLE_RATE, generate_audio
 import scipy.io.wavfile
 from pydub import AudioSegment
@@ -32,7 +31,7 @@ def get_lines_for_chunk(all_lines, chunk_num, total_chunks):
     return all_lines[start:end]
     
         
-async def generate_tts(text, voice, path):
+def generate_tts(text, voice, path):
     """Generate TTS for given text chunk."""
     # audio_array = generate_audio(text, history_prompt=voice)
     try:
@@ -96,7 +95,7 @@ def pick_chapter(chapter_arg=None):
             return chapter, i, lines
     return None, None, lines
 
-async def process_chapter(chapter_num, index, lines):
+def process_chapter(chapter_num, index, lines):
     tsv_path = os.path.join(CHAPTERS_DIR, f"{chapter_num}")
     chapter_number = chapter_num[:-4].split("_")[1] if "_" in chapter_num else chapter_num
     audio_path = os.path.join(AUDIO_DIR, f"chapter_{chapter_number}.mp3")
@@ -112,7 +111,6 @@ async def process_chapter(chapter_num, index, lines):
             content = f.read()
             lines = content.strip().split("\\n")
             indx = 1
-            async with asyncio.TaskGroup() as tg:  
                 for line in lines:
                     
                     # clean_line = line.encode().decode('unicode_escape')
@@ -145,7 +143,6 @@ async def process_chapter(chapter_num, index, lines):
                             chunks.append(silence_file)
 
                 
-    await asyncio.gather(*tg)
     chunks = [f"{chapter_num}_{i}.mp3" for i in range(len(parts))]
     # Combine into final MP3
     combine_audio(chunks, audio_path)
