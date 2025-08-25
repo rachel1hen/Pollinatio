@@ -73,6 +73,9 @@ jobs:
   generate_audio:
     needs: setup
     runs-on: ubuntu-latest
+    env:
+      TOTAL_CHUNKS: 3
+      CHUNK_NUM: ${{ matrix.chunk }}
     strategy:
       fail-fast: false
       matrix:
