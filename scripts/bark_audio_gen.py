@@ -12,7 +12,7 @@ os.environ["XDG_CACHE_HOME"] = f"/tmp/bark_cache_{uuid.uuid4().hex}"
 AUDIO_DIR = "audio"
 CHAPTERS_DIR = "LLM_output"
 AUDIO_DONE_FILE = "audio_done.txt"
-
+semaphore = asyncio.Semaphore(2)
 VOICE_MAPPING = {
     "narrator": "v2/en_speaker_5",
     "male": "v2/en_speaker_6",
@@ -22,6 +22,10 @@ VOICE_MAPPING = {
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 TELEGRAM_CHAT_ID = "-1002386494312"
 
+async def limited_generate_tts(*args, **kwargs):
+    async with semaphore:
+        await generate_tts(*args, **kwargs)
+        
 async def generate_tts(text, voice, path):
     """Generate TTS for given text chunk."""
     # audio_array = generate_audio(text, history_prompt=voice)
@@ -127,7 +131,7 @@ async def process_chapter(chapter_num, index, lines):
                         if part:
                             out_file = os.path.join(tempfile.gettempdir(), f"{chapter_num}_{indx}_{j}.mp3")
                             # await generate_tts(part, voice, out_file)
-                            tg.create_task(generate_tts(part, voice, out_file))
+                            tg.create_task(limited_generate_tts(*args(part, voice, out_file))
                             # tg.append(asyncio.create_task(generate_tts(part, voice, out_file)))
                             # tasks.append(tg.create_task(generate_tts(part, voice, out_file)))
                             chunks.append(out_file)
