@@ -125,9 +125,9 @@ jobs:
           name: bark-models
           path: /home/runner/.cache/
           
-      #- name: Install Python Dependencies
-       # run: |
-         #   pip install -r requirements.txt
+      - name: Install Python Dependencies
+        run: |
+            pip install -r requirements.txt
 
       - name: Clean text for audio generation
         run: |
