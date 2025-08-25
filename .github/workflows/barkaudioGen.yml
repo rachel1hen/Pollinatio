@@ -74,12 +74,12 @@ jobs:
     needs: setup
     runs-on: ubuntu-latest
     env:
-      TOTAL_CHUNKS: 3
+      TOTAL_CHUNKS: 10
       CHUNK_NUM: ${{ matrix.chunk }}
     strategy:
       fail-fast: false
       matrix:
-        chunk: [0, 1, 2, 3, 4, 5] 
+        chunk: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] 
 
     steps:
       - name: Checkout repo
