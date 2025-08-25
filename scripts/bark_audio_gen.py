@@ -22,9 +22,15 @@ VOICE_MAPPING = {
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 TELEGRAM_CHAT_ID = "-1002386494312"
 
-async def limited_generate_tts(*args, **kwargs):
-    async with semaphore:
-        await generate_tts(*args, **kwargs)
+def get_lines_for_chunk(all_lines, chunk_num, total_chunks):
+    total = len(all_lines)
+    base_size = total // total_chunks
+    remainder = total % total_chunks
+
+    start = chunk_num * base_size + min(chunk_num, remainder)
+    end = start + base_size + (1 if chunk_num < remainder else 0)
+    return all_lines[start:end]
+    
         
 async def generate_tts(text, voice, path):
     """Generate TTS for given text chunk."""
