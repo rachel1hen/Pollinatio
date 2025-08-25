@@ -131,7 +131,7 @@ async def process_chapter(chapter_num, index, lines):
                         if part:
                             out_file = os.path.join(tempfile.gettempdir(), f"{chapter_num}_{indx}_{j}.mp3")
                             # await generate_tts(part, voice, out_file)
-                            tg.create_task(limited_generate_tts(*args(part, voice, out_file))
+                            tg.create_task(limited_generate_tts(*args(part, voice, out_file)))
                             # tg.append(asyncio.create_task(generate_tts(part, voice, out_file)))
                             # tasks.append(tg.create_task(generate_tts(part, voice, out_file)))
                             chunks.append(out_file)
