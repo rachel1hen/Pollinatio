@@ -34,7 +34,8 @@ def get_lines_for_chunk(all_lines, chunk_num, total_chunks):
 async def generate_tts(text, voice, path):
     """Generate TTS for given text chunk."""
     try:
-        audio_array = await asyncio.to_thread(generate_audio, text, history_prompt=voice)
+        audio_array = await asyncio.to_thread(generate_audio, text, history_prompt=voice,text_temp=0.5,
+    waveform_temp=0.5)
         wav_path = path.replace(".mp3", ".wav")
         scipy.io.wavfile.write(wav_path, SAMPLE_RATE, audio_array)
         
