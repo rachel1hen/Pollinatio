@@ -14,7 +14,7 @@ CHAPTERS_DIR = "LLM_output"
 AUDIO_DONE_FILE = "audio_done.txt"
 
 VOICE_MAPPING = {
-    "narrator": "v2/en_speaker_5",
+    "narrator": "v2/hi_speaker_5",
     "male": "v2/en_speaker_6",
     "female": "v2/en_speaker_9"
 }
