@@ -80,7 +80,7 @@ jobs:
       #   EOF
 
     - name: Commit updated processed list
-    run: |
+      run: |
         git config user.name "github-actions[bot]"
         git config user.email "41898282+github-actions[bot]@users.noreply.github.com"          git add audio_done.txt
         git commit -m "Update processed_audio list"
