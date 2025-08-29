@@ -108,7 +108,7 @@ jobs:
 
           - name: Stich py
             run: |
-               python stich.py "${{ github.event.inputs.chapter_number }}"
+               python scripts/Stich.py "${{ github.event.inputs.chapter_number }}"
            
 
         
