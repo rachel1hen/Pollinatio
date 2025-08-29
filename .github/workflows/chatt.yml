@@ -55,7 +55,14 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        
+      - name: Cache package 
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-python3.10
+          restore-keys: |
+              ${{ runner.os }}-pip-
+            
       - name: Upgrade pip and install dependencies
         run: |
           python -m pip install --upgrade pip
