@@ -152,7 +152,7 @@ async def process_chapter(chapter_num, index, lines):
             files={"audio": f}
         )
 
-    os.remove(audio_path)
+    #os.remove(audio_path)
 
     lines[index] = f"{chapter_num},1,1\n"
     with open(AUDIO_DONE_FILE, "w") as f:
