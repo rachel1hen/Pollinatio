@@ -24,6 +24,7 @@ TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 TELEGRAM_CHAT_ID = "-1002386494312"
 
  def get_lines_for_chunk(all_lines, chunk_num, total_chunks):
+     
      total = len(all_lines)
      base_size = total // total_chunks
      remainder = total % total_chunks
@@ -103,10 +104,10 @@ async def process_chapter(chapter_num, index, lines):
         content = f.read()
         all_lines = content.strip().split("\\n")
 
-     chunk_num = int(os.getenv("CHUNK_NUM", "0"))
-     total_chunks = int(os.getenv("TOTAL_CHUNKS", "1"))
+    chunk_num = int(os.getenv("CHUNK_NUM", "0"))
+    total_chunks = int(os.getenv("TOTAL_CHUNKS", "1"))
 
-     lines_to_process = get_lines_for_chunk(all_lines, chunk_num, total_chunks)
+    lines_to_process = get_lines_for_chunk(all_lines, chunk_num, total_chunks)
 
     chunks = []
     idx = 1
