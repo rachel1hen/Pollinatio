@@ -12,6 +12,13 @@ TELEGRAM_CHAT_ID = "-1002386494312"
 
 def main():
     chapter_arg = os.getenv("CHAPTER_NUM")
+    audio_path = "chunks"
+    with open(audio_path, "rb") as f:
+        requests.post(
+            f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendAudio",
+            data={"chat_id": TELEGRAM_CHAT_ID},
+            files={"audio": f}
+        )
     #chapter, idx, lines = pick_chapter(chapter_arg)
     #if not chapter:
     #    print("No chapters pending")
