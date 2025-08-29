@@ -91,7 +91,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: chunk-${{ matrix.chunk }}
-          path: audio/chunk_${{ matrix.chunk }}.wav
+          path: audio/chunk_${{ matrix.chunk }}.mp3
 
   stch: 
       needs: generate_audio
