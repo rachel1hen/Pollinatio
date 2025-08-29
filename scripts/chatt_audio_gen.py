@@ -16,8 +16,8 @@ AUDIO_DONE_FILE = "audio_done.txt"
 
 VOICE_MAPPING = {
     "narrator": "sample/Narrator.mp3",
-    "male": "sample/Male_1.mp3",
-    "female": "sample/Female_5.mp3"
+    "male": "sample/Male_1.wav",
+    "female": "sample/Female_5.wav"
 }
 
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
