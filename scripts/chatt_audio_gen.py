@@ -50,7 +50,7 @@ async def generate_tts(text, voice, path):
     #         check=True
     #     )
     #     os.remove(wav_path)
-        wav = model.generate(text, audio_prompt_path=AUDIO_PROMPT_PATH)
+        wav = model.generate(text, audio_prompt_path=voice)
         ta.save(path, wav, model.sr)
         
         print(f"✅ Generated TTS for {text[:30]}...")
@@ -128,7 +128,8 @@ async def process_chapter(chapter_num, index, lines):
         else:
             if actor == "Chen Ping":
                 voice = "sample/Cheng.mp3"
-            voice = VOICE_MAPPING["narrator"]
+            else:
+                voice = VOICE_MAPPING["narrator"]
 
         text_parts = text.split("...")
         for j, part in enumerate(text_parts):
