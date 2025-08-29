@@ -101,6 +101,17 @@ jobs:
             uses: actions/download-artifact@v3
             with: 
                path: chunks/
+          - name: Install ffmpeg
+            run: |
+                 sudo apt-get update && sudo apt-get install -y ffmpeg
+                 pip install pydub python-telegram-bot==20.6
+
+          - name: Stich py
+            run: |
+               python stich.py "${{ github.event.inputs.chapter_number }}"
+           
+
+        
               
 
         
