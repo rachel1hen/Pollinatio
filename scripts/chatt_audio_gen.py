@@ -22,15 +22,15 @@ VOICE_MAPPING = {
 
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 TELEGRAM_CHAT_ID = "-1002386494312"
-AUDIO_PROMPT_PATH = ""
-# def get_lines_for_chunk(all_lines, chunk_num, total_chunks):
-#     total = len(all_lines)
-#     base_size = total // total_chunks
-#     remainder = total % total_chunks
 
-#     start = chunk_num * base_size + min(chunk_num, remainder)
-#     end = start + base_size + (1 if chunk_num < remainder else 0)
-#     return all_lines[start:end]
+ def get_lines_for_chunk(all_lines, chunk_num, total_chunks):
+     total = len(all_lines)
+     base_size = total // total_chunks
+     remainder = total % total_chunks
+
+     start = chunk_num * base_size + min(chunk_num, remainder)
+     end = start + base_size + (1 if chunk_num < remainder else 0)
+     return all_lines[start:end]
 
 async def generate_tts(text, voice, path):
     """Generate TTS for given text chunk."""
@@ -103,15 +103,15 @@ async def process_chapter(chapter_num, index, lines):
         content = f.read()
         all_lines = content.strip().split("\\n")
 
-    # chunk_num = int(os.getenv("CHUNK_NUM", "0"))
-    # total_chunks = int(os.getenv("TOTAL_CHUNKS", "1"))
+     chunk_num = int(os.getenv("CHUNK_NUM", "0"))
+     total_chunks = int(os.getenv("TOTAL_CHUNKS", "1"))
 
-    # lines_to_process = get_lines_for_chunk(all_lines, chunk_num, total_chunks)
+     lines_to_process = get_lines_for_chunk(all_lines, chunk_num, total_chunks)
 
     chunks = []
     idx = 1
 
-    for line in all_lines:
+    for line in lines_to_process:
         parts = line.split("\\t")
         if len(parts) < 4:
             continue
