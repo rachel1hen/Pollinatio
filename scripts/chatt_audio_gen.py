@@ -94,7 +94,7 @@ def pick_chapter(chapter_arg=None):
 async def process_chapter(chapter_num, index, lines):
     tsv_path = os.path.join(CHAPTERS_DIR, chapter_num)
     chapter_number = chapter_num[:-4].split("_")[1] if "_" in chapter_num else chapter_num
-    audio_path = os.path.join(AUDIO_DIR, f"chapter_{chapter_number}.mp3")
+    
     os.makedirs(AUDIO_DIR, exist_ok=True)
 
     silence_file = create_silence(500, os.path.join(tempfile.gettempdir(), "silence.mp3"))
@@ -104,6 +104,7 @@ async def process_chapter(chapter_num, index, lines):
         all_lines = content.strip().split("\\n")
 
     chunk_num = int(os.getenv("CHUNK_NUM", "0"))
+    audio_path = os.path.join(AUDIO_DIR, f"chunk_{chunk_num}.wav")
     total_chunks = int(os.getenv("TOTAL_CHUNKS", "1"))
 
     lines_to_process = get_lines_for_chunk(all_lines, chunk_num, total_chunks)
