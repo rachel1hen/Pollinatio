@@ -104,7 +104,7 @@ async def process_chapter(chapter_num, index, lines):
         all_lines = content.strip().split("\\n")
 
     chunk_num = int(os.getenv("CHUNK_NUM", "0"))
-    audio_path = os.path.join(AUDIO_DIR, f"chunk_{chunk_num}.wav")
+    audio_path = os.path.join(AUDIO_DIR, f"chunk_{chunk_num}.mp3")
     total_chunks = int(os.getenv("TOTAL_CHUNKS", "1"))
 
     lines_to_process = get_lines_for_chunk(all_lines, chunk_num, total_chunks)
