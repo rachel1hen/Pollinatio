@@ -22,8 +22,7 @@ VOICE_MAPPING = {
 
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 TELEGRAM_CHAT_ID = "-1002386494312"
-
- def get_lines_for_chunk(all_lines, chunk_num, total_chunks):
+def get_lines_for_chunk(all_lines, chunk_num, total_chunks):
      
      total = len(all_lines)
      base_size = total // total_chunks
