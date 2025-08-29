@@ -7,3 +7,5 @@ import subprocess
 import uuid
 import requests
 
+TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+TELEGRAM_CHAT_ID = "-1002386494312"
