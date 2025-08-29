@@ -125,11 +125,11 @@ async def process_chapter(chapter_num, index, lines):
             voice = VOICE_MAPPING.get(gender, VOICE_MAPPING["male"])
         elif gender == "female":
             voice = VOICE_MAPPING.get(gender, VOICE_MAPPING["female"])
-        else:
-            if actor == "Chen Ping":
+        else:   
+            voice = VOICE_MAPPING["narrator"]
+            
+        if actor == "Chen Ping":
                 voice = "sample/Cheng.mp3"
-            else:
-                voice = VOICE_MAPPING["narrator"]
 
         text_parts = text.split("...")
         for j, part in enumerate(text_parts):
