@@ -112,7 +112,7 @@ jobs:
             env:
               TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
             run: |
-               python scripts/Stich.py "${{ github.event.inputs.chapter_number }}"
+               python scripts/sti.py "${{ github.event.inputs.chapter_number }}"
            
 
         
