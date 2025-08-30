@@ -106,6 +106,10 @@ jobs:
             uses: actions/download-artifact@v4
             with: 
                path: chunks/
+          - name: List downloaded artifacts
+            run: |
+               find chunks/
+               
           - name: Install ffmpeg
             run: |
                  sudo apt-get update && sudo apt-get install -y ffmpeg
