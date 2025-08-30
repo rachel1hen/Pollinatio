@@ -30,7 +30,8 @@ def main():
 
     chunk_files = []
     for i in range(20):  # Based on TOTAL_CHUNKS in workflow
-        chunk_path = os.path.join(audio_path, f"chunk-{i}", f"chunk_{i}.mp3")
+        #chunk_path = os.path.join(audio_path, f"chunk-{i}", f"chunk_{i}.mp3")
+        chunk_path = os.path.join(audio_path, f"chunk_{i}.mp3")
         if os.path.exists(chunk_path):
             chunk_files.append(chunk_path)
 
