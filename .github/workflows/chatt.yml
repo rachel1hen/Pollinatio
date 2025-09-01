@@ -13,7 +13,7 @@ permissions:
 
 jobs:
   run_chattts:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
 
     steps:
     - name: Setup Python
@@ -45,7 +45,7 @@ jobs:
   
   generate_audio:
     needs: run_chattts
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     env:
       TOTAL_CHUNKS: 20
       CHUNK_NUM: ${{ matrix.chunk }}
@@ -97,7 +97,7 @@ jobs:
 
   stch: 
       needs: generate_audio
-      runs-on: ubuntu-latest
+      runs-on: macos-latest
       steps: 
           - name: Checkout repository
             uses: actions/checkout@v4
