@@ -1,4 +1,4 @@
-from funasr import AutoModelForTTS
+from funasr.models import AutoModelForTTS
 
 def main():
     model = AutoModelForTTS.from_pretrained("iic/CosyVoice2-200M", trust_remote_code=True)
