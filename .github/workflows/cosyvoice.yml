@@ -39,7 +39,6 @@ jobs:
         run: brew install ffmpeg
       - name: Install Python dependencies
         run: |
-          python -m pip install --upgrade pip
           pip install "funasr[tts]==1.0.27"
           pip install "modelscope>=1.9.5"
 
