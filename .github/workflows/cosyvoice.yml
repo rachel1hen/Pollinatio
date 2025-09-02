@@ -19,13 +19,11 @@ jobs:
       - name: Install dependencies (venv + PyTorch + CosyVoice)
         shell: bash
         run: |
-          python -m venv .venv
-          source .venv/bin/activate
           python -m pip install --upgrade pip
           # On macOS arm64, pip's default torch wheel includes Metal (MPS) support
           pip install torch torchvision torchaudio
           pip install cosyvoice soundfile
-          pip install funasr==1.1.9 soundfile
+          pip install soundfile
      
       - name: Install system deps
         run: |
