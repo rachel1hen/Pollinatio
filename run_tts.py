@@ -1,25 +1,12 @@
-# scripts/run_tts.py
-import sys
-import soundfile as sf
 from funasr import AutoModelForTTS
 
 def main():
-    if len(sys.argv) < 2:
-        print("Usage: python run_tts.py 'Your text here'")
-        sys.exit(1)
-
-    text = sys.argv[1]
-    print(f"🔊 Generating TTS for: {text}")
-
-    # Load CosyVoice2 model
     model = AutoModelForTTS.from_pretrained("iic/CosyVoice2-200M", trust_remote_code=True)
+    text = "Hello, this is CosyVoice2 running on a Mac M1 self-hosted runner."
+    wav_file = "output.wav"
 
-    # Inference
-    wav, sr = model.generate(text, spk="en_default")
-
-    # Save
-    sf.write("output.wav", wav, sr)
-    print("✅ Saved output.wav")
+    wav = model.generate(text=text, spk_id=0)
+    model.save_wav(wav, wav_file)
 
 if __name__ == "__main__":
     main()
