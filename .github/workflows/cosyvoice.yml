@@ -29,7 +29,18 @@ jobs:
      
       - name: Install system deps
         run: |
-          brew install ffmpeg || sudo apt-get update && sudo apt-get install -y ffmpeg
+          if [[ "$RUNNER_OS" == "macOS" ]]; then
+            brew install ffmpeg
+          elif [[ "$RUNNER_OS" == "Linux" ]]; then
+            sudo apt-get update
+            sudo apt-get install -y ffmpeg
+          fi
+        shell: bash
+
+      - name: Install ffmpeg
+        run: brew install ffmpeg
+
+
 
       - name: Run CosyVoice2 TTS
         shell: bash
