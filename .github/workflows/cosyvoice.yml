@@ -48,7 +48,6 @@ jobs:
         env:
           PYTORCH_ENABLE_MPS_FALLBACK: "1"
         run: |
-          source .venv/bin/activate
           python run_tts.py "Hello, this is CosyVoice2 running on a Mac M1 self-hosted runner."
 
       - name: Upload generated audio
