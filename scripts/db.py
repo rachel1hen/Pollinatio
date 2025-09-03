@@ -10,10 +10,11 @@ MALE_VOICES = ["Male_1.wav", "Male_2.wav"]
 FEMALE_VOICES = ["Female_1.wav", "Female_2.wav", "Female_3.wav", "Female_4.wav"]
 
 def assign_voice(actor_name, gender, existing_voices):
-    voice_pool = MALE_VOICES if gender == "male" else FEMALE_VOICES
-    available = [v for v in voice_pool if v not in existing_voices]
     if actor_name == "Chen Ping" :
         return "Cheng.mp3"
+    voice_pool = MALE_VOICES if gender == "male" else FEMALE_VOICES
+    available = [v for v in voice_pool if v not in existing_voices]
+
     return random.choice(available) if available else random.choice(voice_pool)
 
 def update_voice_db(chapter_file):
