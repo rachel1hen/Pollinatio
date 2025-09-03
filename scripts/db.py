@@ -12,7 +12,7 @@ FEMALE_VOICES = ["Female_1.wav", "Female_2.wav", "Female_3.wav", "Female_4.wav"]
 def assign_voice(actor_name, gender, existing_voices):
     if actor_name == "Chen Ping" :
         return "Cheng.mp3"
-    elif actor_name == "narrator":
+    elif actor_name.strip().lower().strip('"\'') == "narrator":
         return "Narrator.mp3"
     voice_pool = MALE_VOICES if gender == "male" else FEMALE_VOICES
     available = [v for v in voice_pool if v not in existing_voices]
@@ -58,6 +58,9 @@ def update_voice_db(chapter_file):
                     "INSERT INTO voice_assignments (actor_name, gender, voice_file) VALUES (?, ?, ?)",
                     (actor_name, gender, voice_file)
             )
+            cursor.execute("SELECT actor_name, voice_file FROM voice_assignments")
+            current = dict(cursor.fetchall())
+
             used_voices.add(voice_file)
             new_assignments.append(actor_name)
 
