@@ -1,0 +1,128 @@
+name: ChatTTS Full Setup and Verify
+
+on:
+  workflow_dispatch:
+    inputs:
+      chapter_number:
+        description: 'Chapter number to process'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+
+jobs:
+  run_chattts:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+          python-version: "3.10"
+    - name: Cache package 
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-python3.10
+        restore-keys: |
+            ${{ runner.os }}-pip-
+
+    - name: Upgrade pip and install dependencies
+      run: |
+          sudo apt-get install -y espeak-ng
+          git clone https://github.com/Zyphra/Zonos.git
+          cd Zonos
+          pip install --upgrade pip
+          pip install -e .
+          pip install torch
+
+
+    # - name: Install ffmpeg
+    #   run: sudo apt-get update && sudo apt-get install -y ffmpeg
+
+    
+  
+  generate_audio:
+    needs: run_chattts
+    runs-on: ubuntu-latest
+    env:
+      TOTAL_CHUNKS: 20
+      CHUNK_NUM: ${{ matrix.chunk }}
+    strategy:
+      fail-fast: true 
+      matrix:
+        chunk: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 ]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Cache package 
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-python3.10
+          restore-keys: |
+              ${{ runner.os }}-pip-
+            
+      - name: Upgrade pip and install dependencies
+        run: |
+          sudo apt-get install -y espeak-ng
+          git clone https://github.com/Zyphra/Zonos.git
+          cd Zonos
+          pip install --upgrade pip
+          pip install -e .
+          pip install torch
+
+
+      # - name: Install ffmpeg
+      #   run: sudo apt-get update && sudo apt-get install -y ffmpeg
+        
+      - name: Clean text for audio generation
+        run: |
+            python scripts/clean_data.py "${{ github.event.inputs.chapter_number }}"
+
+      
+      - name: Run ChatTTS inference and save output
+        env:
+            TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+        run: |
+            cp -r sample/* zonos/
+            cd zonos
+            python scripts/zonos_audio_gen.py "${{ github.event.inputs.chapter_number }}"
+
+
+      - name: Upload artifact 
+        uses: actions/upload-artifact@v4
+        with:
+          name: chunk-${{ matrix.chunk }}
+          path: audio/chunk_${{ matrix.chunk }}.mp3
+
+  stch: 
+      needs: generate_audio
+      runs-on: ubuntu-latest
+      steps: 
+          - name: Checkout repository
+            uses: actions/checkout@v4
+            
+          - name: Download
+            uses: actions/download-artifact@v4
+            with: 
+               path: chunks/
+          - name: List downloaded artifacts
+            run: |
+               find chunks/
+               cp -r chunks /tmp/
+         
+          - name: Install ffmpeg
+            run: |
+                 sudo apt-get update && sudo apt-get install -y ffmpeg
+                 pip install pydub python-telegram-bot==20.6
+
+          - name: Stich py
+            env:
+              TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+            run: |
+               python scripts/sti.py "${{ github.event.inputs.chapter_number }}"
+           
+
+        
