@@ -12,9 +12,9 @@ import requests
 
 device = torch.device("cpu")
 model = Zonos.from_pretrained("Zyphra/Zonos-v0.1-transformer", device=device)
-AUDIO_DIR = "audio"
-CHAPTERS_DIR = "LLM_output"
-AUDIO_DONE_FILE = "audio_done.txt"
+AUDIO_DIR = "../audio"
+CHAPTERS_DIR = "../LLM_output"
+AUDIO_DONE_FILE = "../audio_done.txt"
 
 VOICE_MAPPING = {
     "narrator": "Narrator.mp3",
