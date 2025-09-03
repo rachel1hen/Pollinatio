@@ -94,7 +94,7 @@ async def process_chapter(chapter_num, index, lines):
     
     os.makedirs(AUDIO_DIR, exist_ok=True)
 
-    silence_file = create_silence(500, os.path.join(tempfile.gettempdir(), "silence.mp3"))
+    silence_file = create_silence(1000, os.path.join(tempfile.gettempdir(), "silence.mp3"))
 
     with open(tsv_path, "r", encoding="utf-8") as f:
         content = f.read()
