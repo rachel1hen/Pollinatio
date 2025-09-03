@@ -70,12 +70,13 @@ jobs:
           python scripts/clean_data.py "${{ github.event.inputs.chapter_number }}"
 
           git clone https://github.com/Zyphra/Zonos.git
+          cp -r sample/* Zonos/
           cd Zonos
           pip install --upgrade pip
           pip install -e .
           pip install torch
           sudo apt-get update && sudo apt-get install -y ffmpeg
-          cp -r ../sample/* ./zonos/
+          
           
           python ../scripts/zonos_audio_gen.py "${{ github.event.inputs.chapter_number }}"
 
