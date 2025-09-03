@@ -31,6 +31,7 @@ jobs:
     - name: Upgrade pip and install dependencies
       run: |
           sudo apt-get install -y espeak-ng
+          pip install torch pyyaml pydub deep-translator python-telegram-bot==20.6
           git clone https://github.com/Zyphra/Zonos.git
           cd Zonos
           pip install --upgrade pip
@@ -38,8 +39,8 @@ jobs:
           pip install torch
 
 
-    # - name: Install ffmpeg
-    #   run: sudo apt-get update && sudo apt-get install -y ffmpeg
+    - name: Install ffmpeg
+      run: sudo apt-get update && sudo apt-get install -y ffmpeg
 
     
   
@@ -67,6 +68,7 @@ jobs:
       - name: Upgrade pip and install dependencies
         run: |
           sudo apt-get install -y espeak-ng
+          pip install torch pyyaml pydub deep-translator python-telegram-bot==20.6
           git clone https://github.com/Zyphra/Zonos.git
           cd Zonos
           pip install --upgrade pip
