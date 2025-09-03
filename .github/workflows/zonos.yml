@@ -1,4 +1,4 @@
-name: ChatTTS Full Setup and Verify
+name: Zonos Full Setup and Verify
 
 on:
   workflow_dispatch:
