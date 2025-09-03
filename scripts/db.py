@@ -9,9 +9,11 @@ DB_PATH = Path("voice.db")
 MALE_VOICES = ["Male_1.wav", "Male_2.wav"]
 FEMALE_VOICES = ["Female_1.wav", "Female_2.wav", "Female_3.wav", "Female_4.wav"]
 
-def assign_voice(gender, existing_voices):
+def assign_voice(actor_name, gender, existing_voices):
     voice_pool = MALE_VOICES if gender == "male" else FEMALE_VOICES
     available = [v for v in voice_pool if v not in existing_voices]
+    if actor_name == "Chen Ping" :
+        return "Cheng.mp3"
     return random.choice(available) if available else random.choice(voice_pool)
 
 def update_voice_db(chapter_file):
@@ -43,7 +45,7 @@ def update_voice_db(chapter_file):
                 continue
             actor_name, gender = parts[0].strip(), parts[1].strip()
             if actor_name not in current:
-                voice_file = assign_voice(gender, used_voices)
+                voice_file = assign_voice(actor_name, gender, used_voices)
                 print(f"Assigning voice: {actor_name} -> {voice_file}")
                 cursor.execute(
                     "INSERT INTO voice_assignments (actor_name, gender, voice_file) VALUES (?, ?, ?)",
