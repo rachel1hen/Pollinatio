@@ -45,7 +45,10 @@ async def generate_tts(text, voice, path, mood):
             language="en-us",
             # emotion=[0.01, 0.01, 1.00, 0.01, 0.01, 0.01, 0.01, 0.02]
         )
-        ta.save(path, wav, model.sr)
+        conditioning = model.prepare_conditioning(cond_dict)
+        codes = model.generate(conditioning)
+        wavs = model.autoencoder.decode(codes).cpu()
+        ta.save(path,  wavs[0], model.autoencoder.sampling_rate)
         
         print(f"✅ Generated TTS for {text[:30]}...")
     except Exception as e:
