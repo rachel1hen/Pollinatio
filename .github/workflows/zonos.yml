@@ -24,7 +24,7 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Update voice.db from chapter file
-      run: python scripts/update_voice_db.py
+      run: python scripts/db.py
       env:
           CHAPTER_FILE:  ${{ github.event.inputs.chapter_number }}    
     # - name: Cache package 
