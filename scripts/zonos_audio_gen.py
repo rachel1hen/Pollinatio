@@ -142,12 +142,12 @@ async def process_chapter(chapter_num, index, lines):
 
     combine_audio(chunks, audio_path)
 
-    with open(audio_path, "rb") as f:
-        requests.post(
-            f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendAudio",
-            data={"chat_id": TELEGRAM_CHAT_ID},
-            files={"audio": f}
-        )
+    # with open(audio_path, "rb") as f:
+    #     requests.post(
+    #         f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendAudio",
+    #         data={"chat_id": TELEGRAM_CHAT_ID},
+    #         files={"audio": f}
+    #     )
 
     #os.remove(audio_path)
 
