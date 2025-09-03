@@ -5,7 +5,6 @@ from zonos.conditioning import make_cond_dict
 import os
 import tempfile
 import asyncio
-import scipy.io.wavfile
 from pydub import AudioSegment
 import subprocess
 import uuid
