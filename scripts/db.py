@@ -65,8 +65,9 @@ def commit_changes():
     subprocess.run(["git", "push"], check=True)
 
 if __name__ == "__main__":
-    chapter_file = os.getenv("CHAPTER_FILE", "chapter_1.txt")  # Default if not passed via env
-    print(f"🧠 Reading actor info from: {chapter_file}")
+    chapter_number = os.getenv("CHAPTER_FILE", "1")  # Default if not passed via env
+    print(f"🧠 Reading actor info from: {chapter_number}")
+    chapter_file = f"LLM_output/chapter_{chapter_number}.txt"
     if update_voice_db(chapter_file):
         print("✅ DB updated, committing to Git...")
         commit_changes()
