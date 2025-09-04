@@ -6,7 +6,7 @@ import subprocess
 
 DB_PATH = Path("voice.db")
 
-MALE_VOICES = ["Male_1.wav", "Male_2.mp3"]
+MALE_VOICES = ["Male_1.wav", "Male_2.mp3","Male_3.mp3","male_rickmorty.mp3"]
 FEMALE_VOICES = ["Female_1.mp3", "Female_2.mp3", "Female_3.mp3", "Female_4.mp3"]
 
 def assign_voice(actor_name, gender, existing_voices):
