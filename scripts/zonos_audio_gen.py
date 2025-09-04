@@ -137,7 +137,7 @@ async def process_chapter(chapter_num, index, lines):
         if actor == "Chen Ping":
                 voice = "Cheng.mp3"
 
-        
+        voice = current.get(actor)
         
         text_parts = text.split("...")
         for j, part in enumerate(text_parts):
