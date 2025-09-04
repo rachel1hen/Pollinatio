@@ -9,6 +9,9 @@ from pydub import AudioSegment
 import subprocess
 import uuid
 import requests
+import sqlite3
+from pathlib import Path
+
 
 device = torch.device("cpu")
 model = Zonos.from_pretrained("Zyphra/Zonos-v0.1-transformer", device=device)
@@ -21,7 +24,7 @@ VOICE_MAPPING = {
     "male": "Male_1.wav",
     "female": "Female_5.wav"
 }
-
+DB_PATH = Path("voice.db")
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 TELEGRAM_CHAT_ID = "-1002386494312"
 def get_lines_for_chunk(all_lines, chunk_num, total_chunks):
@@ -116,7 +119,8 @@ async def process_chapter(chapter_num, index, lines):
         actor, gender, mood, text = parts
         if not text:
             continue
-
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor()
         if actor == "narrator":
             voice = VOICE_MAPPING["narrator"]
         elif gender == "male":
