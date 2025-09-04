@@ -24,7 +24,7 @@ VOICE_MAPPING = {
     "male": "Male_1.wav",
     "female": "Female_5.wav"
 }
-DB_PATH = Path("voice.db")
+DB_PATH = Path("../voice.db")
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 TELEGRAM_CHAT_ID = "-1002386494312"
 def get_lines_for_chunk(all_lines, chunk_num, total_chunks):
