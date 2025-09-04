@@ -111,7 +111,12 @@ async def process_chapter(chapter_num, index, lines):
 
     chunks = []
     idx = 1
-
+    
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("SELECT actor_name, voice_file FROM voice_assignments")
+    current = dict(cursor.fetchall())
+    conn.close()
     for line in lines_to_process:
         parts = line.split("\\t")
         if len(parts) < 4:
@@ -119,20 +124,21 @@ async def process_chapter(chapter_num, index, lines):
         actor, gender, mood, text = parts
         if not text:
             continue
-        conn = sqlite3.connect(DB_PATH)
-        cursor = conn.cursor()
-        if actor == "narrator":
-            voice = VOICE_MAPPING["narrator"]
-        elif gender == "male":
-            voice = VOICE_MAPPING.get(gender, VOICE_MAPPING["male"])
-        elif gender == "female":
-            voice = VOICE_MAPPING.get(gender, VOICE_MAPPING["female"])
-        else:   
-            voice = VOICE_MAPPING["narrator"]
+        
+        #if actor == "narrator":
+         #   voice = VOICE_MAPPING["narrator"]
+        #elif gender == "male":
+        #    voice = VOICE_MAPPING.get(gender, VOICE_MAPPING["male"])
+        #elif gender == "female":
+        #    voice = VOICE_MAPPING.get(gender, VOICE_MAPPING["female"])
+        #else:   
+         #   voice = VOICE_MAPPING["narrator"]
             
         if actor == "Chen Ping":
                 voice = "Cheng.mp3"
 
+        
+        
         text_parts = text.split("...")
         for j, part in enumerate(text_parts):
             part = part.strip()
