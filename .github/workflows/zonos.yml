@@ -27,14 +27,31 @@ jobs:
       run: python scripts/db.py
       env:
           CHAPTER_FILE:  ${{ github.event.inputs.chapter_number }}    
-    # - name: Cache package 
-    #   uses: actions/cache@v3
-    #   with:
-    #     path: ~/.cache/pip
-    #     key: ${{ runner.os }}-pip-python3.10
-    #     restore-keys: |
-    #         ${{ runner.os }}-pip-
+    - name: Cache package 
+      uses: actions/cache@v3
+      with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-python3.10
+          restore-keys: |
+             ${{ runner.os }}-pip-
+    
+    - name: Upgrade pip and install dependencies
+      env:
+            TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      run: |
+          sudo apt-get install -y espeak-ng
+          pip install torch pyyaml pydub deep-translator python-telegram-bot==20.6
+          #python scripts/clean_data.py "${{ github.event.inputs.chapter_number }}"
 
+          git clone https://github.com/Zyphra/Zonos.git
+          cp -r sample/* Zonos/
+          cd Zonos
+          pip install --upgrade pip
+          pip install -e .
+          pip install torch
+          sudo apt-get update && sudo apt-get install -y ffmpeg
+          #sudo apt-get install -y ffmpeg
+          
     # - name: Upgrade pip and install dependencies
     #   run: |
     #       sudo apt-get install -y espeak-ng
