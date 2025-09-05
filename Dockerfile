@@ -1,41 +1,20 @@
-FROM python:3.11-slim
+FROM python:3.10-slim
+ENV DEBIAN_FRONTEND=noninteractive
 
-# Install system dependencies for Chrome & Selenium
 RUN apt-get update && apt-get install -y \
-    chromium \
-    chromium-driver \
-    fonts-liberation \
-    libappindicator3-1 \
-    libasound2 \
-    libatk-bridge2.0-0 \
-    libatk1.0-0 \
-    libcups2 \
-    libdbus-1-3 \
-    libgdk-pixbuf2.0-0 \
-    libnspr4 \
-    libnss3 \
-    libx11-xcb1 \
-    libxcomposite1 \
-    libxdamage1 \
-    libxrandr2 \
-    xdg-utils \
     ffmpeg \
+    espeak-ng \
+    git \
     && rm -rf /var/lib/apt/lists/*
 
-# Set environment variables for Chrome
-ENV CHROME_BIN=/usr/bin/chromium
-ENV PATH=$PATH:/usr/bin/chromium
+RUN pip install --upgrade pip
 
-# Install Python dependencies
+RUN pip install torch pyyaml pydub deep-translator python-telegram-bot==20.6
+
+RUN git clone https://github.com/Zyphra/Zonos.git /app/Zonos \
+    # && cp -r /app/Zonos/sample/* /app/Zonos/ \
+    && pip install -e /app/Zonos
+
 WORKDIR /app
-COPY . /app
-RUN pip install --no-cache-dir -r requirements.txt
 
-# Expose Flask port
-EXPOSE 5000
-
-# Force Python to flush logs
-ENV PYTHONUNBUFFERED=1
-
-# Run the Flask app
-CMD ["python", "tele.py"]
+CMD ["python3", "--version"]
