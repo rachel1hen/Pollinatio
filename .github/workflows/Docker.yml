@@ -23,16 +23,10 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    - name: Log in to GitHub Container Registry
-      uses: docker/login-action@v2
-      with:
-        registry: ghcr.io
-        token: ${{ secrets.GIT_KEY }}
-
     - name: Run docker build
       run: |
          docker build -t zonos-runner:latest .
-         #echo $GIT_GH | docker login ghcr.io -u rachel1hen --password-stdin --no-tty
+         echo ${{ secrets.GIT_KEY }} | docker login ghcr.io -u rachel1hen --password-stdin --no-tty
          
          docker tag zonos-runner:latest ghcr.io/rachel1hen/pollinatio/zonos-runner:latest
          docker push ghcr.io/rachel1hen/pollinatio/zonos-runner:latest
