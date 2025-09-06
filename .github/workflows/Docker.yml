@@ -27,5 +27,8 @@ jobs:
       run: 
          docker build -t zonos-runner:latest .
          echo $GIT_GH | docker login ghcr.io -u rachel1hen --password-stdin
+         docker tag zonos-runner:latest ghcr.io/rachel1hen/pollinatio/zonos-runner:latest
+         docker push ghcr.io/rachel1hen/pollinatio/zonos-runner:latest
+         
          
          
