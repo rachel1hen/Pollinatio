@@ -13,7 +13,12 @@ jobs:
         run: |
           curl -fsSL https://tailscale.com/install.sh | sh
           sudo tailscale up --authkey=${{ secrets.TAILSCALE_AUTH_KEY }} --hostname=gh-linux-${{ github.run_id }} --ssh
-
+      - name: Install xRDP and XFCE
+        run: |
+          sudo apt update
+          sudo apt install -y xrdp xfce4 xfce4-goodies
+          echo "startxfce4" > ~/.xsession
+          sudo systemctl enable xrdp --now
       - name: Create SSH User
         run: |
           # Create a new user
@@ -40,6 +45,7 @@ jobs:
           echo "Password: ghpassword123!"
           echo "You can SSH to: $(tailscale ip -4)"
           echo "======================="
+
 
       - name: Keep Runner Alive
         run: |
