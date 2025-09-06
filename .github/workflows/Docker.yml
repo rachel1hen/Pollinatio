@@ -26,4 +26,6 @@ jobs:
     - name: Run docker build
       run: 
          docker build -t zonos-runner:latest .
+         echo $GHCR_PAT | docker login ghcr.io -u rachel1hen --password-stdin
+         
          
