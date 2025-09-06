@@ -1,0 +1,24 @@
+name: Docker Setup and Verify
+
+on:
+  workflow_dispatch:
+    inputs:
+      chapter_number:
+        description: 'Chapter number to process'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+
+jobs:
+  run_chattts:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+          python-version: "3.10"
+    - name: Checkout repository
+      uses: actions/checkout@v4
