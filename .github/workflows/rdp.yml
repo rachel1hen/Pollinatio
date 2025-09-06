@@ -21,30 +21,38 @@ jobs:
           sudo systemctl enable xrdp --now
       - name: Create SSH User
         run: |
+          sudo adduser --disabled-password --gecos "" rdpuser
+          echo 'rdpuser:rdppassword123!' | sudo chpasswd
+          sudo usermod -aG sudo rdpuser
           # Create a new user
-          sudo adduser --disabled-password --gecos "" ghuser
+          # sudo adduser --disabled-password --gecos "" ghuser
       
           # Set password
-          echo 'ghuser:ghpassword123!' | sudo chpasswd
+          # echo 'ghuser:ghpassword123!' | sudo chpasswd
       
           # Add to sudo group
-          sudo usermod -aG sudo ghuser
+          # sudo usermod -aG sudo ghuser
       
           # Enable password authentication in SSH config
-          sudo sed -i 's/^#PasswordAuthentication yes/PasswordAuthentication yes/' /etc/ssh/sshd_config
-          sudo sed -i 's/^PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
+          # sudo sed -i 's/^#PasswordAuthentication yes/PasswordAuthentication yes/' /etc/ssh/sshd_config
+          # sudo sed -i 's/^PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
       
           # Restart SSH service (corrected name)
-          sudo systemctl restart ssh
+          # sudo systemctl restart ssh
 
 
       - name: Output SSH Login Info
         run: |
-          echo "=== SSH LOGIN INFO ==="
-          echo "User: ghuser"
-          echo "Password: ghpassword123!"
-          echo "You can SSH to: $(tailscale ip -4)"
+          echo "=== RDP LOGIN INFO ==="
+          echo "User: rdpuser"
+          echo "Password: rdppassword123!"
+          echo "You can RDP to: $(tailscale ip -4)"
           echo "======================="
+          # echo "=== SSH LOGIN INFO ==="
+          # echo "User: ghuser"
+          # echo "Password: ghpassword123!"
+          # echo "You can SSH to: $(tailscale ip -4)"
+          # echo "======================="
 
 
       - name: Keep Runner Alive
