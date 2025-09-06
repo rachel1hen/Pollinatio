@@ -24,7 +24,7 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Run docker build
-      run: 
+      run: |
          docker build -t zonos-runner:latest .
          echo $GIT_GH | docker login ghcr.io -u rachel1hen --password-stdin
          docker tag zonos-runner:latest ghcr.io/rachel1hen/pollinatio/zonos-runner:latest
