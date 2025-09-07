@@ -119,10 +119,10 @@ jobs:
                find chunks/
                cp -r chunks /tmp/
          
-          - name: Install ffmpeg
-            run: |
-                 sudo apt-get update && sudo apt-get install -y ffmpeg
-                 pip install pydub python-telegram-bot==20.6
+          # - name: Install ffmpeg
+          #   run: |
+          #        sudo apt-get update && sudo apt-get install -y ffmpeg
+          #        pip install pydub python-telegram-bot==20.6
 
           - name: Stich py
             env:
