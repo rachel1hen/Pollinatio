@@ -30,7 +30,7 @@ jobs:
          # docker compose up
          docker build -t zonos-run:latest .
          # docker run -it --gpus=all --net=host -v /path/to/Zonos:/Zonos -t zonos
-         cd /Zonos
+         # cd /Zonos
          
          # docker build -t zonos-runner:latest .
          echo ${{ secrets.GIT_KEY }} | docker login ghcr.io -u rachel1hen --password-stdin
