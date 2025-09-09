@@ -20,12 +20,19 @@ jobs:
       uses: actions/setup-python@v5
       with:
           python-version: "3.10"
-    - name: Checkout repository
-      uses: actions/checkout@v4
+    # - name: Checkout repository
+    #   uses: actions/checkout@v4
 
     - name: Run docker build
       run: |
+         git clone https://github.com/Zyphra/Zonos.git
+         cd Zonos
+         docker compose up
          docker build -t zonos-runner:latest .
+         # docker run -it --gpus=all --net=host -v /path/to/Zonos:/Zonos -t zonos
+         cd /Zonos
+         
+         # docker build -t zonos-runner:latest .
          echo ${{ secrets.GIT_KEY }} | docker login ghcr.io -u rachel1hen --password-stdin
          
          docker tag zonos-runner:latest ghcr.io/rachel1hen/pollinatio/zonos-runner:latest
