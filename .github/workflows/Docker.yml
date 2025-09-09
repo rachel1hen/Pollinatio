@@ -27,7 +27,7 @@ jobs:
       run: |
          git clone https://github.com/Zyphra/Zonos.git
          cd Zonos
-         docker compose up
+         # docker compose up
          docker build -t zonos-run:latest .
          # docker run -it --gpus=all --net=host -v /path/to/Zonos:/Zonos -t zonos
          cd /Zonos
