@@ -79,10 +79,10 @@ jobs:
         env:
             TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
         run: |
-          docker pull ghcr.io/rachel1hen/pollinatio/zonos-run:latest
-          docker run ghcr.io/rachel1hen/pollinatio/zonos-run:latest
-          sudo apt-get install -y espeak-ng
-          pip install pyyaml pydub deep-translator python-telegram-bot==20.6
+          docker pull ghcr.io/rachel1hen/pollinatio/zonos-runner:latest
+          docker run ghcr.io/rachel1hen/pollinatio/zonos-runner:latest
+          #sudo apt-get install -y espeak-ng
+          #pip install pyyaml pydub deep-translator python-telegram-bot==20.6
           python scripts/clean_data.py "${{ github.event.inputs.chapter_number }}"
 
           # git clone https://github.com/Zyphra/Zonos.git
@@ -91,7 +91,7 @@ jobs:
           #pip install --upgrade pip
           #pip install -e .
           #pip install torch
-          sudo apt-get update && sudo apt-get install -y ffmpeg
+          #sudo apt-get update && sudo apt-get install -y ffmpeg
           #sudo apt-get install -y ffmpeg
           
           python ../scripts/zonos_audio_gen.py "${{ github.event.inputs.chapter_number }}"
