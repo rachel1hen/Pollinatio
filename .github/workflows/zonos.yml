@@ -13,8 +13,8 @@ permissions:
 
 jobs:
   run_chattts:
-    # runs-on: ubuntu-latest
-    runs-on: ghcr.io/rachel1hen/pollinatio/zonos-runner:latest
+    runs-on: ubuntu-latest
+    #runs-on: ghcr.io/rachel1hen/pollinatio/zonos-runner:latest
     steps:
     - name: Setup Python
       uses: actions/setup-python@v5
@@ -38,9 +38,9 @@ jobs:
     # - name: Upgrade pip and install dependencies
     #   env:
     #         TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-    #   run: |
-    #       sudo apt-get install -y espeak-ng
-    #       pip install torch pyyaml pydub deep-translator python-telegram-bot==20.6
+      # run: |
+          # sudo apt-get install -y espeak-ng
+          # pip install pyyaml pydub deep-translator python-telegram-bot==20.6
     #       #python scripts/clean_data.py "${{ github.event.inputs.chapter_number }}"
 
     #       git clone https://github.com/Zyphra/Zonos.git
@@ -55,8 +55,8 @@ jobs:
   
   generate_audio:
     needs: run_chattts
-    # runs-on: ubuntu-latest
-    runs-on: ghcr.io/rachel1hen/pollinatio/zonos-runner:latest
+    runs-on: ubuntu-latest
+    #runs-on: ghcr.io/rachel1hen/pollinatio/zonos-runner:latest
     env:
       TOTAL_CHUNKS: 20
       CHUNK_NUM: ${{ matrix.chunk }}
@@ -79,17 +79,19 @@ jobs:
         env:
             TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
         run: |
-          #sudo apt-get install -y espeak-ng
-          #pip install torch pyyaml pydub deep-translator python-telegram-bot==20.6
+          docker pull ghcr.io/rachel1hen/pollinatio/zonos-run:latest
+          docker run ghcr.io/rachel1hen/pollinatio/zonos-run:latest
+          sudo apt-get install -y espeak-ng
+          pip install pyyaml pydub deep-translator python-telegram-bot==20.6
           python scripts/clean_data.py "${{ github.event.inputs.chapter_number }}"
 
-          git clone https://github.com/Zyphra/Zonos.git
-          cp -r sample/* Zonos/
-          cd Zonos
+          # git clone https://github.com/Zyphra/Zonos.git
+          # cp -r sample/* Zonos/
+          # cd Zonos
           #pip install --upgrade pip
           #pip install -e .
           #pip install torch
-          #sudo apt-get update && sudo apt-get install -y ffmpeg
+          sudo apt-get update && sudo apt-get install -y ffmpeg
           #sudo apt-get install -y ffmpeg
           
           python ../scripts/zonos_audio_gen.py "${{ github.event.inputs.chapter_number }}"
