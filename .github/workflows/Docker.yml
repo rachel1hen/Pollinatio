@@ -28,7 +28,7 @@ jobs:
          # docker run -it --gpus=all --net=host -v /path/to/Zonos:/Zonos -t zonos
          # cd /Zonos
          
-         docker build -t zonos-runner:latest .
+         docker build -t zonos-run:latest .
          echo ${{ secrets.GIT_KEY }} | docker login ghcr.io -u rachel1hen --password-stdin
          
          docker tag zonos-run:latest ghcr.io/rachel1hen/pollinatio/zonos-run:latest
