@@ -2,11 +2,7 @@ name: Docker Setup and Verify
 
 on:
   workflow_dispatch:
-    inputs:
-      chapter_number:
-        description: 'Chapter number to process'
-        required: false
-        default: ''
+
 
 permissions:
   contents: write
@@ -25,14 +21,14 @@ jobs:
 
     - name: Run docker build
       run: |
-         git clone https://github.com/Zyphra/Zonos.git
-         cd Zonos
+         #git clone https://github.com/Zyphra/Zonos.git
+         #cd Zonos
          # docker compose up
-         docker build -t zonos-run:latest .
+         #docker build -t zonos-run:latest .
          # docker run -it --gpus=all --net=host -v /path/to/Zonos:/Zonos -t zonos
          # cd /Zonos
          
-         # docker build -t zonos-runner:latest .
+         docker build -t zonos-runner:latest .
          echo ${{ secrets.GIT_KEY }} | docker login ghcr.io -u rachel1hen --password-stdin
          
          docker tag zonos-run:latest ghcr.io/rachel1hen/pollinatio/zonos-run:latest
