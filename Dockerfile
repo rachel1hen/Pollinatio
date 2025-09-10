@@ -12,6 +12,7 @@ RUN pip install --no-cache-dir --upgrade pip && \
     pyyaml \
     pydub \
     deep-translator \
+    torch \
     python-telegram-bot==20.6
 
 RUN git clone https://github.com/Zyphra/Zonos.git /app/Zonos 
