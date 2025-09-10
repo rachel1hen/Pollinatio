@@ -8,12 +8,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends  \
     && rm -rf /var/lib/apt/lists/*
 
 RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir \
-    pyyaml \
-    pydub \
-    deep-translator \
-    torch \
-    python-telegram-bot==20.6
+    # pip install --no-cache-dir \
+    pip install --no-cache-dir pyyaml \
+    pip install --no-cache-dir pydub \
+    pip install --no-cache-dir deep-translator \
+    pip install --no-cache-dir torch \
+    pip install --no-cache-dir python-telegram-bot==20.6
 
 RUN git clone https://github.com/Zyphra/Zonos.git /app/Zonos 
     # && cp -r /app/Zonos/sample/* /app/Zonos/ \
