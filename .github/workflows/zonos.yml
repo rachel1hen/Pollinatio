@@ -80,10 +80,10 @@ jobs:
             TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
         run: |
           docker pull ghcr.io/rachel1hen/pollinatio/zonos-run:latest
-          docker run ghcr.io/rachel1hen/pollinatio/zonos-run:latest
-          #sudo apt-get install -y espeak-ng
-          #pip install torchaudio pyyaml pydub deep-translator python-telegram-bot==20.6
-          docker run ghcr.io/rachel1hen/pollinatio/zonos-run:latest python scripts/clean_data.py "${{ github.event.inputs.chapter_number }}"
+          # docker run ghcr.io/rachel1hen/pollinatio/zonos-run:latest
+          # sudo apt-get install -y espeak-ng
+          # pip install torchaudio pyyaml pydub deep-translator python-telegram-bot==20.6
+          docker run --rm -v "${{ github.workspace }}:/app" -w /app ghcr.io/rachel1hen/pollinatio/zonos-run:latest python scripts/clean_data.py "${{ github.event.inputs.chapter_number }}"
 
           # git clone https://github.com/Zyphra/Zonos.git
           # cp -r sample/* Zonos/
