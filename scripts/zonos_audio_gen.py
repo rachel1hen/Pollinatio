@@ -17,6 +17,7 @@ device = torch.device("cpu")
 model = Zonos.from_pretrained("Zyphra/Zonos-v0.1-transformer", device=device)
 AUDIO_DIR = "./audio"
 CHAPTERS_DIR = "./LLM_output"
+AUDIO_TMP = "./tmp_audio"
 AUDIO_DONE_FILE = "./audio_done.txt"
 
 VOICE_MAPPING = {
@@ -96,8 +97,9 @@ async def process_chapter(chapter_num, index, lines):
     chapter_number = chapter_num[:-4].split("_")[1] if "_" in chapter_num else chapter_num
     
     os.makedirs(AUDIO_DIR, exist_ok=True)
+    os.makedirs(AUDIO_TMP, exist_ok=True)
 
-    silence_file = create_silence(1000, os.path.join(tempfile.gettempdir(), "silence.mp3"))
+    silence_file = create_silence(1000, os.path.join(AUDIO_TMP, "silence.mp3"))
 
     with open(tsv_path, "r", encoding="utf-8") as f:
         content = f.read()
@@ -143,7 +145,7 @@ async def process_chapter(chapter_num, index, lines):
         for j, part in enumerate(text_parts):
             part = part.strip()
             if part:
-                out_file = os.path.join(tempfile.gettempdir(), f"{chapter_num}_{idx}_{j}.mp3")
+                out_file = os.path.join(AUDIO_TMP, f"{chapter_num}_{idx}_{j}.mp3")
                 await generate_tts(part, voice, out_file, mood)
                 chunks.append(out_file)
             if j < len(text_parts) - 1:
