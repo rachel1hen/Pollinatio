@@ -15,16 +15,16 @@ from pathlib import Path
 
 device = torch.device("cpu")
 model = Zonos.from_pretrained("Zyphra/Zonos-v0.1-transformer", device=device)
-AUDIO_DIR = "../audio"
-CHAPTERS_DIR = "../LLM_output"
-AUDIO_DONE_FILE = "../audio_done.txt"
+AUDIO_DIR = "./audio"
+CHAPTERS_DIR = "./LLM_output"
+AUDIO_DONE_FILE = "./audio_done.txt"
 
 VOICE_MAPPING = {
     "narrator": "Narrator.mp3",
     "male": "Male_1.wav",
     "female": "Female_5.wav"
 }
-DB_PATH = Path("../voice.db")
+DB_PATH = Path("./voice.db")
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 TELEGRAM_CHAT_ID = "-1002386494312"
 def get_lines_for_chunk(all_lines, chunk_num, total_chunks):
