@@ -141,7 +141,7 @@ async def process_chapter(chapter_num, index, lines):
 
         voice = current.get(actor)
         voice = f"sample/{voice}"
-        
+        await generate_tts(text, voice, audio_path, mood)
         # text_parts = text.split("...")
         # for j, part in enumerate(text_parts):
         #     part = part.strip()
@@ -163,7 +163,7 @@ async def process_chapter(chapter_num, index, lines):
     #     )
 
     #os.remove(audio_path)
-    await generate_tts(text, voice, audio_path, mood)
+    
     
     lines[index] = f"{chapter_num},1,1\n"
     with open(AUDIO_DONE_FILE, "w") as f:
