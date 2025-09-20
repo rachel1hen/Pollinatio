@@ -5,9 +5,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends  \
     ffmpeg \
     espeak-ng \
     git \
+    g++ \
+    build-essential \
     && rm -rf /var/lib/apt/lists/*
-
-RUN apt-get install -y g++ build-essential
 
 RUN pip install --no-cache-dir --upgrade pip 
     # pip install --no-cache-dir \
