@@ -7,6 +7,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends  \
     git \
     && rm -rf /var/lib/apt/lists/*
 
+RUN apt-get install -y g++ build-essential
+
 RUN pip install --no-cache-dir --upgrade pip 
     # pip install --no-cache-dir \
 RUN pip install --no-cache-dir pyyaml 
