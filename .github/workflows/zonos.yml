@@ -94,7 +94,7 @@ jobs:
           #sudo apt-get update && sudo apt-get install -y ffmpeg
           #sudo apt-get install -y ffmpeg
           
-          docker run --rm -v "${{ github.workspace }}:/work" -w /work -e CHUNK_NUM=${{ matrix.chunk }} ghcr.io/rachel1hen/pollinatio/zonos-run:latest python scripts/zonos_audio_gen.py "${{ github.event.inputs.chapter_number }}"
+          docker run --rm -v "${{ github.workspace }}:/work" -w /work -e CHUNK_NUM=${{ matrix.chunk }} -e TOTAL_CHUNKS=20 ghcr.io/rachel1hen/pollinatio/zonos-run:latest python scripts/zonos_audio_gen.py "${{ github.event.inputs.chapter_number }}"
 
 
 
