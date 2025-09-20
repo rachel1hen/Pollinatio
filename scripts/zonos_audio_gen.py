@@ -65,16 +65,21 @@ def create_silence(ms, path):
         silence.export(silence_path, format="mp3")
     return silence_path
 
-# def combine_audio(files, output_file):
-#     with tempfile.NamedTemporaryFile(mode="w", suffix=".txt", delete=False) as f:
-#         for file in files:
-#             f.write(f"file '{file}'\n")
-#         list_path = f.name
-#     subprocess.run(
-#         ["ffmpeg", "-f", "concat", "-safe", "0", "-i", list_path, "-c", "copy", output_file],
-#         check=True
-#     )
-#     os.unlink(list_path)
+def combine_audio(files, output_file):
+    with open(AUDIO_TMP, "w") as f:
+            for file in files:
+                f.write(f"file '{file}'\n")
+            list_path = f.name
+                
+    # with tempfile.NamedTemporaryFile(mode="w", suffix=".txt", delete=False) as f:
+    #     for file in files:
+    #         f.write(f"file '{file}'\n")
+    #     list_path = f.name
+    subprocess.run(
+        ["ffmpeg", "-f", "concat", "-safe", "0", "-i", list_path, "-c", "copy", output_file],
+        check=True
+    )
+    os.unlink(list_path)
 
 def pick_chapter(chapter_arg=None):
     with open(AUDIO_DONE_FILE, "r") as f:
@@ -141,19 +146,19 @@ async def process_chapter(chapter_num, index, lines):
 
         voice = current.get(actor)
         voice = f"sample/{voice}"
-        await generate_tts(text, voice, audio_path, mood)
-        # text_parts = text.split("...")
-        # for j, part in enumerate(text_parts):
-        #     part = part.strip()
-        #     if part:
-        #         out_file = os.path.join(AUDIO_TMP, f"{chapter_num}_{idx}_{j}.mp3")
-        #         await generate_tts(part, voice, out_file, mood)
-        #         chunks.append(out_file)
-        #     if j < len(text_parts) - 1:
-        #         chunks.append(silence_file)
-        # idx += 1
+        # await generate_tts(text, voice, audio_path, mood)
+        text_parts = text.split("...")
+        for j, part in enumerate(text_parts):
+            part = part.strip()
+            if part:
+                out_file = os.path.join(AUDIO_TMP, f"{chapter_num}_{idx}_{j}.mp3")
+                await generate_tts(part, voice, out_file, mood)
+                chunks.append(out_file)
+            if j < len(text_parts) - 1:
+                chunks.append(silence_file)
+        idx += 1
 
-    # combine_audio(chunks, audio_path)
+    combine_audio(chunks, audio_path)
 
     # with open(audio_path, "rb") as f:
     #     requests.post(
