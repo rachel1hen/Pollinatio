@@ -140,6 +140,7 @@ async def process_chapter(chapter_num, index, lines):
                 voice = "Cheng.mp3"
 
         voice = current.get(actor)
+        voice = f"sample/{voice}"
         
         text_parts = text.split("...")
         for j, part in enumerate(text_parts):
