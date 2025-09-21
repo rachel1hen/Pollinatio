@@ -71,7 +71,8 @@ def combine_audio(files, output_file):
     list_file = os.path.join(AUDIO_TMP, "audio_file_list.txt") 
     with open(list_file, "w") as f:
             for file in files:
-                f.write(f"file '{file}'\n")
+                full_path = os.path.abspath(file)
+                f.write(f"file '{full_path}'\n")
             list_path = f.name
                 
     # with tempfile.NamedTemporaryFile(mode="w", suffix=".txt", delete=False) as f:
