@@ -66,6 +66,8 @@ def create_silence(ms, path):
     return silence_path
 
 def combine_audio(files, output_file):
+    if not os.path.exists(AUDIO_TMP):
+        os.makedirs(AUDIO_TMP, exist_ok=True)
     list_file = os.path.join(AUDIO_TMP, "audio_file_list.txt") 
     with open(list_file, "w") as f:
             for file in files:
