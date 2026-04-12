@@ -16,9 +16,6 @@ CHAPTERS_DIR = "chapters"
 MASTER_FILE = "master_characters.json"
 PROMPT_FILE = "character_prompts.json"
 
-# =============================
-# INPUT ARG
-# =============================
 chapter_arg = sys.argv[1] if len(sys.argv) > 1 else ""
 
 # =============================
@@ -33,24 +30,31 @@ def call_groq(prompt: str) -> str:
     payload = {
         "model": MODEL,
         "messages": [{"role": "user", "content": prompt}],
-        "temperature": 0.7
+        "temperature": 0.3  # 🔥 lower = more consistent JSON
     }
 
-    response = requests.post(GROQ_URL, headers=headers, json=payload)
+    res = requests.post(GROQ_URL, headers=headers, json=payload)
 
-    if response.status_code != 200:
-        raise Exception(f"Groq API Error: {response.text}")
+    if res.status_code != 200:
+        raise Exception(res.text)
 
-    return response.json()["choices"][0]["message"]["content"]
+    return res.json()["choices"][0]["message"]["content"]
 
 # =============================
 # LOAD / SAVE MASTER
 # =============================
 def load_master() -> Dict:
     if not os.path.exists(MASTER_FILE):
-        return {}
+        return {"characters": {}}
+
     with open(MASTER_FILE, "r", encoding="utf-8") as f:
-        return json.load(f)
+        data = json.load(f)
+
+    # 🔥 Fix corrupted structure
+    if "characters" not in data or not isinstance(data["characters"], dict):
+        return {"characters": {}}
+
+    return data
 
 
 def save_master(data: Dict):
@@ -58,28 +62,61 @@ def save_master(data: Dict):
         json.dump(data, f, indent=2, ensure_ascii=False)
 
 # =============================
-# BUILD BASE PROMPT (NO EMOTION)
+# CLEANING / NORMALIZATION
+# =============================
+BANNED_WORDS = ["angry", "cold", "sad", "worried", "dangerous", "intimidating"]
+
+def clean_text(text: str) -> str:
+    if not text:
+        return ""
+    text = text.lower()
+    for w in BANNED_WORDS:
+        text = text.replace(w, "")
+    return text.strip()
+
+
+def generate_seed(name: str) -> int:
+    return abs(hash(name)) % (10**8)
+
+
+def normalize_character(c: Dict) -> Dict:
+    return {
+        "gender": c.get("gender", "").lower(),
+        "age_range": c.get("age_range", "").lower(),
+        "body_build": c.get("body_build", "").lower(),
+        "face_shape": c.get("face_shape", "").lower(),
+        "hair": clean_text(c.get("hair", "")),
+        "eyes": clean_text(c.get("eyes", "")),
+        "signature_item": clean_text(c.get("signature_item", "")),
+        "default_outfit": clean_text(c.get("clothing", "")),  # renamed
+        "seed": generate_seed(c.get("name", "")),
+        "model": "anything-v5"
+    }
+
+# =============================
+# PROMPT GENERATION (FIXED)
 # =============================
 def build_base_prompt(name, c):
     return (
-        f"{name}, {c.get('gender','')}, {c.get('age_range','')}, "
-        f"{c.get('body_build','')} build, "
-        f"{c.get('face_shape','')} face, "
-        f"{c.get('eyes','')}, "
-        f"{c.get('hair','')}, "
-        f"wearing {c.get('clothing','')}, "
-        f"colors {c.get('colors','')}, "
-        f"{c.get('aura','')}, high detail, cinematic lighting"
+        f"masterpiece, best quality, anime style, "
+        f"{c['gender']}, {name}, {c['age_range']}, "
+        f"{c['body_build']} body, {c['face_shape']} face, "
+        f"{c['hair']}, {c['eyes']}, "
+        f"{c['signature_item']}, consistent character design"
     )
 
-# =============================
-# GENERATE PROMPTS FILE
-# =============================
+
 def generate_prompt_file(master: Dict):
     prompts = {}
-    for name, data in master.items():
-        prompt = build_base_prompt(name, data)
-        prompts[name] = " ".join(prompt.split())
+
+    for name, c in master["characters"].items():
+        prompts[name] = {
+            "base_prompt": build_base_prompt(name, c),
+            "negative_prompt": "blurry, bad anatomy, extra limbs, deformed face",
+            "seed": c["seed"],
+            "model": c["model"],
+            "default_outfit": c["default_outfit"]
+        }
 
     with open(PROMPT_FILE, "w", encoding="utf-8") as f:
         json.dump(prompts, f, indent=2, ensure_ascii=False)
@@ -87,76 +124,65 @@ def generate_prompt_file(master: Dict):
     print(f"📌 Updated prompts: {PROMPT_FILE}")
 
 # =============================
-# PROMPT FOR LLM
+# LLM PROMPT (STRICT)
 # =============================
 def build_character_prompt(script: str, existing_names: list) -> str:
     return f"""
-You are designing consistent characters for cinematic AI visual storytelling.
-DO NOT explain.
-DO NOT think.
-DO NOT include <think> tags.
-DO NOT include markdown.
-RETURN ONLY VALID JSON.
+Return ONLY valid JSON. No explanation.
 
-IMPORTANT:
-- Do NOT recreate existing characters
-- Existing characters: {existing_names}
-- Only generate NEW characters
+FORMAT:
+{{
+  "characters": [
+    {{
+      "name": "",
+      "gender": "",
+      "age_range": "",
+      "body_build": "",
+      "face_shape": "",
+      "eyes": "",
+      "hair": "",
+      "clothing": "",
+      "signature_item": ""
+    }}
+  ]
+}}
 
-STRICT RULES:
-- Each character must have ONE fixed and unique appearance
-- Appearance MUST NOT change across scenes
-- No vague descriptions
-- Ignore narrator and unknown
-
-Return ONLY valid JSON
-
-Fields:
-- name
-- gender
-- age_range
-- height
-- body_build
-- face_shape
-- eyes
-- hair
-- clothing
-- colors
-- aura
-- signature_item
+RULES:
+- Do NOT include emotions in eyes
+- Do NOT include aura
+- Keep descriptions visual only
+- clothing = default outfit (not scene specific)
+- Do NOT repeat existing characters: {existing_names}
 
 SCRIPT:
 {script}
 """
 
 # =============================
-# JSON CLEANER
+# JSON EXTRACTION
 # =============================
 def extract_json(text: str) -> Dict:
+    text = re.sub(r"<.*?>", "", text, flags=re.DOTALL)
     start = text.find("{")
     end = text.rfind("}") + 1
     return json.loads(text[start:end])
 
 # =============================
-# MERGE LOGIC
+# MERGE
 # =============================
 def merge_characters(master: Dict, new_chars: Dict) -> Dict:
-    for name, data in new_chars.items():
+    chars = master["characters"]
 
-        # 🔥 Fix if incoming data is list
-        if isinstance(data, list):
-            print(f"⚠️ Fixing list for {name}")
-            data = data[0] if data else {}
+    for c in new_chars.get("characters", []):
+        name = c.get("name")
+        if not name:
+            continue
 
-        # 🔥 Fix if master already corrupted
-        if name in master and isinstance(master[name], list):
-            print(f"⚠️ Fixing existing list for {name}")
-            master[name] = master[name][0] if master[name] else {}
-
-        if name not in master:
-            master[name] = data
+        if name not in chars:
+            chars[name] = normalize_character(c)
 
     return master
+
 # =============================
 # PROCESS
 # =============================
@@ -174,15 +200,12 @@ def process_chapters():
         if chapter_arg and chapter_num != str(chapter_arg):
             continue
 
-        file_path = os.path.join(CHAPTERS_DIR, chapter_file)
-        output_file = os.path.join(CHAPTERS_DIR, f"chapter_{chapter_num}_characters.json")
-
         print(f"\n🚀 Processing Chapter {chapter_num}")
 
-        with open(file_path, "r", encoding="utf-8") as f:
+        with open(os.path.join(CHAPTERS_DIR, chapter_file), "r", encoding="utf-8") as f:
             script = f.read()
 
-        existing_names = list(master.keys())
+        existing_names = list(master["characters"].keys())
 
         prompt = build_character_prompt(script, existing_names)
         response = call_groq(prompt)
@@ -190,19 +213,19 @@ def process_chapters():
         try:
             new_chars = extract_json(response)
         except Exception:
-            print(f"❌ JSON parse failed for chapter {chapter_num}")
+            print("❌ JSON parse failed")
             print(response)
             continue
 
         master = merge_characters(master, new_chars)
         save_master(master)
 
-        with open(output_file, "w", encoding="utf-8") as f:
+        out_file = os.path.join(CHAPTERS_DIR, f"chapter_{chapter_num}_characters.json")
+        with open(out_file, "w", encoding="utf-8") as f:
             json.dump(new_chars, f, indent=2, ensure_ascii=False)
 
-        print(f"✅ New characters saved: {output_file}")
+        print(f"✅ Saved: {out_file}")
 
-    # 🔥 Always regenerate prompt file after processing
     generate_prompt_file(master)
 
 # =============================
@@ -210,6 +233,6 @@ def process_chapters():
 # =============================
 if __name__ == "__main__":
     if not GROQ_API_KEY:
-        raise Exception("❌ Set GROQ_API_KEY environment variable")
+        raise Exception("Set GROQ_API_KEY")
 
     process_chapters()
