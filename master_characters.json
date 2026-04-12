@@ -1,1 +1,52 @@
-{}
+{
+  "characters": {
+    "Chen Ping": {
+      "gender": "male",
+      "age_range": "late 20s",
+      "body_build": "slender",
+      "face_shape": "sharp jawline",
+      "hair": "short, black",
+      "eyes": "sharp, dark",
+      "signature_item": "fists",
+      "default_outfit": "plain shirt, jeans",
+      "seed": 21060346,
+      "model": "anything-v5"
+    },
+    "Tang Hongying": {
+      "gender": "female",
+      "age_range": "middle-aged",
+      "body_build": "slender",
+      "face_shape": "oval",
+      "hair": "bun",
+      "eyes": "wide, pale",
+      "signature_item": "cloth bag",
+      "default_outfit": "simple dress",
+      "seed": 9075147,
+      "model": "anything-v5"
+    },
+    "Geng Shanshan": {
+      "gender": "female",
+      "age_range": "early 20s",
+      "body_build": "average",
+      "face_shape": "round",
+      "hair": "long, black",
+      "eyes": "almond-shaped",
+      "signature_item": "none",
+      "default_outfit": "casual",
+      "seed": 93672639,
+      "model": "anything-v5"
+    },
+    "Bald Head": {
+      "gender": "male",
+      "age_range": "late 30s",
+      "body_build": "stocky",
+      "face_shape": "bald, round",
+      "hair": "bald",
+      "eyes": "narrow, fierce",
+      "signature_item": "tattoos",
+      "default_outfit": "leather jacket",
+      "seed": 21520315,
+      "model": "anything-v5"
+    }
+  }
+}

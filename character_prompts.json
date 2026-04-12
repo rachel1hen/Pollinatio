@@ -1,0 +1,30 @@
+{
+  "Chen Ping": {
+    "base_prompt": "masterpiece, best quality, anime style, male, Chen Ping, late 20s, slender body, sharp jawline face, short, black, sharp, dark, fists, consistent character design",
+    "negative_prompt": "blurry, bad anatomy, extra limbs, deformed face",
+    "seed": 21060346,
+    "model": "anything-v5",
+    "default_outfit": "plain shirt, jeans"
+  },
+  "Tang Hongying": {
+    "base_prompt": "masterpiece, best quality, anime style, female, Tang Hongying, middle-aged, slender body, oval face, bun, wide, pale, cloth bag, consistent character design",
+    "negative_prompt": "blurry, bad anatomy, extra limbs, deformed face",
+    "seed": 9075147,
+    "model": "anything-v5",
+    "default_outfit": "simple dress"
+  },
+  "Geng Shanshan": {
+    "base_prompt": "masterpiece, best quality, anime style, female, Geng Shanshan, early 20s, average body, round face, long, black, almond-shaped, none, consistent character design",
+    "negative_prompt": "blurry, bad anatomy, extra limbs, deformed face",
+    "seed": 93672639,
+    "model": "anything-v5",
+    "default_outfit": "casual"
+  },
+  "Bald Head": {
+    "base_prompt": "masterpiece, best quality, anime style, male, Bald Head, late 30s, stocky body, bald, round face, bald, narrow, fierce, tattoos, consistent character design",
+    "negative_prompt": "blurry, bad anatomy, extra limbs, deformed face",
+    "seed": 21520315,
+    "model": "anything-v5",
+    "default_outfit": "leather jacket"
+  }
+}
