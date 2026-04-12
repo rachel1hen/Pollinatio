@@ -92,6 +92,11 @@ def generate_prompt_file(master: Dict):
 def build_character_prompt(script: str, existing_names: list) -> str:
     return f"""
 You are designing consistent characters for cinematic AI visual storytelling.
+DO NOT explain.
+DO NOT think.
+DO NOT include <think> tags.
+DO NOT include markdown.
+RETURN ONLY VALID JSON.
 
 IMPORTANT:
 - Do NOT recreate existing characters
