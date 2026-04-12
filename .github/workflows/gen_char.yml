@@ -7,7 +7,10 @@ on:
         description: "Chapter number (leave empty for all)"
         required: false
         default: ""
-
+        
+permissions:
+  contents: write
+  
 jobs:
   generate:
     runs-on: ubuntu-latest
@@ -31,10 +34,10 @@ jobs:
         run: |
           if [ -z "${{ github.event.inputs.chapter }}" ]; then
             echo "Running for ALL chapters"
-            python character_engine_groq.py
+            python character_json.py
           else
             echo "Running for chapter ${{ github.event.inputs.chapter }}"
-            python character_engine_groq.py ${{ github.event.inputs.chapter }}
+            python character_json.py ${{ github.event.inputs.chapter }}
           fi
 
       - name: Commit results
