@@ -1,1 +1,19 @@
-{}
+{
+  "characters": {
+    "name": "Chen Ping",
+    "gender": "Male",
+    "age_range": "Early 20s",
+    "height": "6'0\"",
+    "body_build": "Lean and wiry",
+    "face_shape": "Angular",
+    "eyes": "Cold, piercing black",
+    "hair": "Short, jet-black",
+    "clothing": "Sleeveless shirt, torn jeans",
+    "colors": [
+      "Black",
+      "Gray"
+    ],
+    "aura": "Icy, dangerous",
+    "signature_item": "Fists with white gloves"
+  }
+}
