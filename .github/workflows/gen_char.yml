@@ -1,0 +1,48 @@
+name: Generate Characters
+
+on:
+  workflow_dispatch:
+    inputs:
+      chapter:
+        description: "Chapter number (leave empty for all)"
+        required: false
+        default: ""
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: |
+          pip install requests
+
+      - name: Run character engine
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+        run: |
+          if [ -z "${{ github.event.inputs.chapter }}" ]; then
+            echo "Running for ALL chapters"
+            python character_engine_groq.py
+          else
+            echo "Running for chapter ${{ github.event.inputs.chapter }}"
+            python character_engine_groq.py ${{ github.event.inputs.chapter }}
+          fi
+
+      - name: Commit results
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          
+          git add master_characters.json character_prompts.json chapters/*_characters.json || true
+          
+          git commit -m "Update characters [auto]" || echo "No changes to commit"
+          git push
