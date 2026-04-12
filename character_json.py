@@ -142,10 +142,21 @@ def extract_json(text: str) -> Dict:
 # =============================
 def merge_characters(master: Dict, new_chars: Dict) -> Dict:
     for name, data in new_chars.items():
+
+        # 🔥 Fix if incoming data is list
+        if isinstance(data, list):
+            print(f"⚠️ Fixing list for {name}")
+            data = data[0] if data else {}
+
+        # 🔥 Fix if master already corrupted
+        if name in master and isinstance(master[name], list):
+            print(f"⚠️ Fixing existing list for {name}")
+            master[name] = master[name][0] if master[name] else {}
+
         if name not in master:
             master[name] = data
-    return master
 
+    return master
 # =============================
 # PROCESS
 # =============================
