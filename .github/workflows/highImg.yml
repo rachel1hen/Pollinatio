@@ -2,7 +2,8 @@ name: Ultra Quality Character Generation
 
 on:
   workflow_dispatch:
-
+permissions:
+  actions: write
 jobs:
   generate:
     runs-on: ubuntu-latest
