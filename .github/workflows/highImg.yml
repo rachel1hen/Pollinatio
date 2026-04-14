@@ -44,7 +44,7 @@ jobs:
 
           # 🔥 memory optimization (VERY IMPORTANT)
           pipe.enable_attention_slicing()
-          pipe.enable_sequential_cpu_offload()
+          # pipe.enable_sequential_cpu_offload()
 
           def generate(prompt, seed, path):
               generator = torch.manual_seed(seed)
