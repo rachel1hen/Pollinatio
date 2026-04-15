@@ -38,6 +38,7 @@ jobs:
           pipe = StableDiffusionPipeline.from_pretrained(
               "Lykon/DreamShaper",
               torch_dtype=torch.float32
+              safety_checker=None
           )
 
           pipe = pipe.to("cpu")
