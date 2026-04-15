@@ -3,7 +3,7 @@ name: Generate Character Sheets
 on:
   workflow_dispatch:
 permissions:
-  actions: write
+  contents: write
 jobs:
   generate:
     runs-on: ubuntu-latest
