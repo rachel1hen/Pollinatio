@@ -31,7 +31,7 @@ jobs:
           import torch
           from diffusers import StableDiffusionPipeline
 
-          OUTPUT_DIR = "assets/characters"
+          OUTPUT_DIR = "assets/characters_new"
           os.makedirs(OUTPUT_DIR, exist_ok=True)
 
           print("🚀 Loading DreamShaper model...")
